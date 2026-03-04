@@ -28,7 +28,7 @@ const INITIAL_STATE: GameState = {
       color: '#ec4899',
       health: 100,
       maxHealth: 100,
-      meta: { name: 'Camille', dialog: "L\u00e9o ! Les pelleteuses arrivent demain. On doit mobiliser le quartier !" }
+      meta: { name: 'Camille', dialog: "L\u00e9o ! Les pelleteuses arrivent demain. On doit mobiliser le quartier ! Prends ces tracts et distribue-les aux gens du centre-ville." }
     },
     {
       id: 'mairesse',
@@ -52,11 +52,53 @@ const INITIAL_STATE: GameState = {
       color: '#f59e0b',
       health: 100,
       maxHealth: 100,
-      meta: { name: 'Sam (Brocanteur)', dialog: "Tu veux un tract ? Ou une patate bio ? Les deux sont des armes." }
+      meta: { name: 'Sam (Brocanteur)', dialog: "Besan\u00e7on change, mon pote. Trop de b\u00e9ton, pas assez de vieux canap\u00e9s." }
+    },
+    {
+      id: 'zadiste1',
+      type: 'npc',
+      pos: { x: 2500, y: 950 },
+      vel: { x: 0, y: 0 },
+      angle: 0,
+      size: 14,
+      color: '#064e3b',
+      health: 100,
+      maxHealth: 100,
+      meta: { name: 'Zadiste', dialog: "On l\u00e2chera rien !" }
+    },
+    {
+      id: 'passant1',
+      type: 'npc',
+      pos: { x: 800, y: 1700 },
+      vel: { x: 0, y: 0 },
+      angle: 0,
+      size: 15,
+      color: '#64748b',
+      health: 100,
+      maxHealth: 100,
+      meta: { name: 'Passant', dialog: "Encore des travaux... je suis en retard !" }
+    },
+    {
+      id: 'passant2',
+      type: 'npc',
+      pos: { x: 400, y: 1850 },
+      vel: { x: 0, y: 0 },
+      angle: 0,
+      size: 15,
+      color: '#64748b',
+      health: 100,
+      maxHealth: 100,
+      meta: { name: 'Passant', dialog: "Un \u00e9co-quartier ? C'est bien pour la valeur de mon appart, non ?" }
     }
   ],
   karma: 20,
   missionId: 'mobilisation',
+  missionStatus: 'pending',
+  missionData: {
+    flyersToDistribute: 0,
+    flyersDistributed: 0,
+    targetNPCs: []
+  },
   worldSize: WORLD_SIZE,
   isPaused: false,
 };
@@ -127,7 +169,36 @@ export default function GameView() {
           const dy = ent.pos.y - gs.player.pos.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 60 && ent.meta?.dialog) {
-            setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+            // Mission Logic
+            if (ent.id === 'camille' && gs.missionStatus === 'pending') {
+              gs.missionStatus = 'active';
+              gs.missionData.flyersToDistribute = 5;
+              setDialog({ name: ent.meta.name, text: "Tiens, prends ces 5 tracts. Distribue-les aux gens dans le centre-ville (à l'ouest) !" });
+            } else if (gs.missionStatus === 'active' && gs.missionData.flyersToDistribute > 0) {
+              // Check if NPC already received a flyer
+              if (!gs.missionData.targetNPCs.includes(ent.id) && ent.id !== 'camille' && ent.id !== 'zadiste1') {
+                gs.missionData.targetNPCs.push(ent.id);
+                gs.missionData.flyersToDistribute--;
+                gs.missionData.flyersDistributed++;
+                gs.karma += 5; // Eco-action!
+                setDialog({ name: ent.meta.name, text: "Ah, merci ! Je vais lire ça." });
+                
+                // Mission Completion check
+                if (gs.missionData.flyersDistributed >= 3) {
+                  gs.missionStatus = 'completed';
+                  setDialog({ name: "Mission accomplie", text: "Tu as sensibilis\u00e9 assez de gens ! Retourne voir Camille." });
+                }
+              } else if (ent.id === 'camille' && gs.missionStatus === 'completed') {
+                 setDialog({ name: 'Camille', text: "Super boulot L\u00e9o ! On commence \u00e0 se faire entendre. Pr\u00e9pare-toi pour la suite." });
+                 gs.karma += 10;
+                 gs.missionStatus = 'completed'; // remains completed but different dialog
+              } else {
+                 setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+              }
+            } else {
+              setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+            }
+            
             clearTimeout(dialogTimeout.current);
             dialogTimeout.current = setTimeout(() => setDialog(null), 4000);
             inp.action = false; // consume

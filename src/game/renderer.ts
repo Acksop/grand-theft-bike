@@ -57,7 +57,7 @@ export function renderGame(ctx: CanvasRenderingContext2D, state: GameState) {
 
   // Draw Entities (NPCs)
   for (const entity of state.entities) {
-    drawEntity(ctx, entity, player);
+    drawEntity(ctx, entity, player, state.missionData.targetNPCs.includes(entity.id));
   }
 
   // Draw Player
@@ -128,7 +128,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, p: Entity) {
   }
 }
 
-function drawEntity(ctx: CanvasRenderingContext2D, entity: Entity, player: Entity) {
+function drawEntity(ctx: CanvasRenderingContext2D, entity: Entity, player: Entity, hasFlyer: boolean = false) {
   ctx.save();
   ctx.translate(entity.pos.x, entity.pos.y);
 
@@ -141,6 +141,16 @@ function drawEntity(ctx: CanvasRenderingContext2D, entity: Entity, player: Entit
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(-3, -4, 2, 2);
   ctx.fillRect(1, -4, 2, 2);
+
+  // Received flyer indicator
+  if (hasFlyer) {
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.moveTo(s / 2 + 2, -s / 2);
+    ctx.lineTo(s / 2 + 6, -s / 2 + 4);
+    ctx.lineTo(s / 2 + 10, -s / 2 - 4);
+    ctx.stroke();
+  }
 
   ctx.restore();
 

@@ -23,6 +23,12 @@ export interface GameState {
   entities: Entity[];
   karma: number; // -100 (Béton) to 100 (Éco)
   missionId: string | null;
+  missionStatus: 'pending' | 'active' | 'completed';
+  missionData: {
+    flyersToDistribute: number;
+    flyersDistributed: number;
+    targetNPCs: string[]; // IDs of NPCs who received flyers
+  };
   worldSize: Vector2;
   isPaused: boolean;
 }

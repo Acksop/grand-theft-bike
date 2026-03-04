@@ -52,11 +52,31 @@ export default function Hud({ state }: HudProps) {
           <p className="text-primary text-[10px] uppercase font-bold mb-1 tracking-widest">
             Acte 1 &mdash; La Mobilisation
           </p>
-          <p className="text-xs text-foreground/80 leading-relaxed">
-            Retrouve <span className="text-accent font-bold">Camille</span> au camp de la ZAD.
-            <br />
-            <span className="text-muted-foreground italic text-[10px]">[*Les Va\u00eetes : lutte r\u00e9elle depuis 2018*]</span>
-          </p>
+          {state.missionStatus === 'pending' && (
+            <p className="text-xs text-foreground/80 leading-relaxed">
+              Retrouve <span className="text-accent font-bold">Camille</span> au camp de la ZAD.
+              <br />
+              <span className="text-muted-foreground italic text-[10px]">[*Les Va\u00eetes : lutte r\u00e9elle depuis 2018*]</span>
+            </p>
+          )}
+          {state.missionStatus === 'active' && (
+            <div className="text-xs text-foreground/80 leading-relaxed space-y-1">
+              <p>Distribue les tracts dans le centre-ville.</p>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] uppercase text-muted-foreground">Tracts :</span>
+                <span className="text-primary font-bold">{state.missionData.flyersToDistribute}</span>
+                <span className="text-[10px] uppercase text-muted-foreground ml-2">Sensis :</span>
+                <span className="text-accent font-bold">{state.missionData.flyersDistributed}/3</span>
+              </div>
+            </div>
+          )}
+          {state.missionStatus === 'completed' && (
+            <p className="text-xs text-foreground/80 leading-relaxed">
+              <span className="text-primary font-bold tracking-wider">SENSIBILISATION RÉUSSIE !</span>
+              <br />
+              Retourne voir Camille aux Va\u00eetes.
+            </p>
+          )}
           <p className="mt-2 text-[9px] text-muted-foreground animate-pulse">
             Z/Q/S/D piloter &bull; ESPACE interagir
           </p>
