@@ -24,10 +24,16 @@ export interface GameState {
   karma: number; // -100 (Béton) to 100 (Éco)
   missionId: string | null;
   missionStatus: 'pending' | 'active' | 'completed';
+  act: 1 | 2 | 3; // Current act
   missionData: {
     flyersToDistribute: number;
     flyersDistributed: number;
     targetNPCs: string[]; // IDs of NPCs who received flyers
+    // Act 2 sabotage
+    machinesSabotaged: number;
+    machinesTotal: number;
+    hasPotatoes: boolean;
+    computerHacked: boolean;
   };
   worldSize: Vector2;
   isPaused: boolean;
