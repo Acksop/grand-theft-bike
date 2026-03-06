@@ -4,109 +4,11 @@ import { updateBike, checkCollisions } from '../../game/engine';
 import { renderGame } from '../../game/renderer';
 import { WORLD_SIZE } from '../../game/world';
 import Hud from '../ui/Hud';
+import { CharacterType } from '../../App';
 
-const INITIAL_STATE: GameState = {
-  player: {
-    id: 'player',
-    type: 'player',
-    pos: { x: 2300, y: 1000 },
-    vel: { x: 0, y: 0 },
-    angle: -Math.PI / 2,
-    size: 20,
-    color: '#10b981',
-    health: 100,
-    maxHealth: 100,
-  },
-  entities: [
-    {
-      id: 'camille',
-      type: 'npc',
-      pos: { x: 2450, y: 1050 },
-      vel: { x: 0, y: 0 },
-      angle: 0,
-      size: 16,
-      color: '#ec4899',
-      health: 100,
-      maxHealth: 100,
-      meta: { name: 'Camille', dialog: "L\u00e9o ! Les pelleteuses arrivent demain. On doit mobiliser le quartier ! Prends ces tracts et distribue-les aux gens du centre-ville." }
-    },
-    {
-      id: 'mairesse',
-      type: 'npc',
-      pos: { x: 600, y: 1900 },
-      vel: { x: 0, y: 0 },
-      angle: 0,
-      size: 18,
-      color: '#94a3b8',
-      health: 100,
-      maxHealth: 100,
-      meta: { name: 'La Mairesse', dialog: "Notre \u00e9co-quartier est r\u00e9volutionnaire ! [*greenwashing*]" }
-    },
-    {
-      id: 'brocanteur',
-      type: 'npc',
-      pos: { x: 300, y: 1600 },
-      vel: { x: 0, y: 0 },
-      angle: 0,
-      size: 14,
-      color: '#f59e0b',
-      health: 100,
-      maxHealth: 100,
-      meta: { name: 'Sam (Brocanteur)', dialog: "Besan\u00e7on change, mon pote. Trop de b\u00e9ton, pas assez de vieux canap\u00e9s." }
-    },
-    {
-      id: 'zadiste1',
-      type: 'npc',
-      pos: { x: 2500, y: 950 },
-      vel: { x: 0, y: 0 },
-      angle: 0,
-      size: 14,
-      color: '#064e3b',
-      health: 100,
-      maxHealth: 100,
-      meta: { name: 'Zadiste', dialog: "On l\u00e2chera rien !" }
-    },
-    {
-      id: 'passant1',
-      type: 'npc',
-      pos: { x: 800, y: 1700 },
-      vel: { x: 0, y: 0 },
-      angle: 0,
-      size: 15,
-      color: '#64748b',
-      health: 100,
-      maxHealth: 100,
-      meta: { name: 'Passant', dialog: "Encore des travaux... je suis en retard !" }
-    },
-    {
-      id: 'passant2',
-      type: 'npc',
-      pos: { x: 400, y: 1850 },
-      vel: { x: 0, y: 0 },
-      angle: 0,
-      size: 15,
-      color: '#64748b',
-      health: 100,
-      maxHealth: 100,
-      meta: { name: 'Passant', dialog: "Un \u00e9co-quartier ? C'est bien pour la valeur de mon appart, non ?" }
-    }
-  ],
-  karma: 20,
-  missionId: 'mobilisation',
-  missionStatus: 'pending',
-  act: 1,
-  missionData: {
-    flyersToDistribute: 0,
-    flyersDistributed: 0,
-    targetNPCs: [],
-    machinesSabotaged: 0,
-    machinesTotal: 3,
-    hasPotatoes: false,
-    computerHacked: false
-  },
-  worldSize: WORLD_SIZE,
-  isPaused: false,
-};
+interface GameViewProps {
+  character: CharacterType;
+}
 
 const KEY_MAP: Record<string, keyof InputState> = {
   z: 'up', ArrowUp: 'up',
@@ -116,12 +18,118 @@ const KEY_MAP: Record<string, keyof InputState> = {
   ' ': 'action',
 };
 
-export default function GameView() {
+export default function GameView({ character }: GameViewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const stateRef = useRef<GameState>(structuredClone(INITIAL_STATE));
+  
+  // Create initial state once inside component to use props
+  const [initialState] = useState<GameState>(() => ({
+    player: {
+      id: 'player',
+      type: 'player',
+      pos: { x: 2300, y: 1000 },
+      vel: { x: 0, y: 0 },
+      angle: -Math.PI / 2,
+      size: 20,
+      color: character.color,
+      health: character.stats.health,
+      maxHealth: character.stats.health,
+      meta: { characterId: character.id, speedMultiplier: character.stats.speed }
+    },
+    entities: [
+      {
+        id: 'camille',
+        type: 'npc',
+        pos: { x: 2450, y: 1050 },
+        vel: { x: 0, y: 0 },
+        angle: 0,
+        size: 16,
+        color: '#ec4899',
+        health: 100,
+        maxHealth: 100,
+        meta: { name: 'Camille', dialog: `${character.name} ! Les pelleteuses arrivent demain. On doit mobiliser le quartier ! Prends ces tracts et distribue-les aux gens du centre-ville.` }
+      },
+      {
+        id: 'mairesse',
+        type: 'npc',
+        pos: { x: 600, y: 1900 },
+        vel: { x: 0, y: 0 },
+        angle: 0,
+        size: 18,
+        color: '#94a3b8',
+        health: 100,
+        maxHealth: 100,
+        meta: { name: 'La Mairesse', dialog: "Notre \u00e9co-quartier est r\u00e9volutionnaire ! [*greenwashing*]" }
+      },
+      {
+        id: 'brocanteur',
+        type: 'npc',
+        pos: { x: 300, y: 1600 },
+        vel: { x: 0, y: 0 },
+        angle: 0,
+        size: 14,
+        color: '#f59e0b',
+        health: 100,
+        maxHealth: 100,
+        meta: { name: 'Sam (Brocanteur)', dialog: "Besan\u00e7on change, mon pote. Trop de b\u00e9ton, pas assez de vieux canap\u00e9s." }
+      },
+      {
+        id: 'zadiste1',
+        type: 'npc',
+        pos: { x: 2500, y: 950 },
+        vel: { x: 0, y: 0 },
+        angle: 0,
+        size: 14,
+        color: '#064e3b',
+        health: 100,
+        maxHealth: 100,
+        meta: { name: 'Zadiste', dialog: "On l\u00e2chera rien !" }
+      },
+      {
+        id: 'passant1',
+        type: 'npc',
+        pos: { x: 800, y: 1700 },
+        vel: { x: 0, y: 0 },
+        angle: 0,
+        size: 15,
+        color: '#64748b',
+        health: 100,
+        maxHealth: 100,
+        meta: { name: 'Passant', dialog: "Encore des travaux... je suis en retard !" }
+      },
+      {
+        id: 'passant2',
+        type: 'npc',
+        pos: { x: 400, y: 1850 },
+        vel: { x: 0, y: 0 },
+        angle: 0,
+        size: 15,
+        color: '#64748b',
+        health: 100,
+        maxHealth: 100,
+        meta: { name: 'Passant', dialog: "Un \u00e9co-quartier ? C'est bien pour la valeur de mon appart, non ?" }
+      }
+    ],
+    karma: 20,
+    missionId: 'mobilisation',
+    missionStatus: 'pending',
+    act: 1,
+    missionData: {
+      flyersToDistribute: 0,
+      flyersDistributed: 0,
+      targetNPCs: [],
+      machinesSabotaged: 0,
+      machinesTotal: 3,
+      hasPotatoes: false,
+      computerHacked: false
+    },
+    worldSize: WORLD_SIZE,
+    isPaused: false,
+  }));
+
+  const stateRef = useRef<GameState>(structuredClone(initialState));
   const inputRef = useRef<InputState>({ up: false, down: false, left: false, right: false, action: false });
   const frameRef = useRef<number>(0);
-  const [hudState, setHudState] = useState(INITIAL_STATE);
+  const [hudState, setHudState] = useState(initialState);
   const [dialog, setDialog] = useState<{ name: string; text: string } | null>(null);
   const [showAct2Intro, setShowAct2Intro] = useState(false);
   const [showAct3Intro, setShowAct3Intro] = useState(false);
@@ -238,7 +246,7 @@ export default function GameView() {
                     setDialog({ name: "Mission accomplie", text: "Tu as sensibiliser assez de gens ! Retourne voir Camille." });
                   }
                 } else if (ent.id === 'camille' && gs.missionStatus === 'completed') {
-                   setDialog({ name: 'Camille', text: "Super boulot Léo ! On commence à se faire entendre. Prépare-toi pour la Suite..." });
+                   setDialog({ name: 'Camille', text: `Super boulot ${character.name} ! On commence à se faire entendre. Prépare-toi pour la Suite...` });
                    gs.karma += 10;
                 } else {
                    setDialog({ name: ent.meta.name, text: ent.meta.dialog });
@@ -311,7 +319,7 @@ export default function GameView() {
 
     frameRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(frameRef.current);
-  }, [checkActTransition]);
+  }, [checkActTransition, character.name]);
 
   return (
     <div className="relative w-full h-screen overflow-hidden" style={{ background: '#020617' }}>
@@ -423,6 +431,11 @@ export default function GameView() {
       
       <canvas ref={canvasRef} className="pixel-art block" />
       <Hud state={hudState} />
+      {/* Character badge */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-slate-900/80 border border-primary/30 px-3 py-1 pixel-corners">
+        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: character.color }} />
+        <span className="text-[10px] uppercase font-bold tracking-widest text-primary">{character.name}</span>
+      </div>
 
       {dialog && (
         <div className="absolute bottom-40 left-1/2 -translate-x-1/2 max-w-lg w-full px-4 animate-fade-in pointer-events-none">

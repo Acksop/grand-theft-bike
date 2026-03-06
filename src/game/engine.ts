@@ -6,13 +6,17 @@ export const BIKE_TURN_SPEED = 0.08;
 export const MAX_SPEED = 8;
 
 export function updateBike(bike: Entity, input: InputState) {
+  const speedMultiplier = bike.meta?.speedMultiplier || 1;
+  const accel = BIKE_ACCEL * speedMultiplier;
+  const maxSpeed = MAX_SPEED * speedMultiplier;
+
   // Movement
   if (input.up) {
-    bike.vel.x += Math.cos(bike.angle) * BIKE_ACCEL;
-    bike.vel.y += Math.sin(bike.angle) * BIKE_ACCEL;
+    bike.vel.x += Math.cos(bike.angle) * accel;
+    bike.vel.y += Math.sin(bike.angle) * accel;
   } else if (input.down) {
-    bike.vel.x -= Math.cos(bike.angle) * BIKE_ACCEL * 0.5;
-    bike.vel.y -= Math.sin(bike.angle) * BIKE_ACCEL * 0.5;
+    bike.vel.x -= Math.cos(bike.angle) * accel * 0.5;
+    bike.vel.y -= Math.sin(bike.angle) * accel * 0.5;
   }
 
   // Turning (only when moving)
@@ -32,8 +36,8 @@ export function updateBike(bike: Entity, input: InputState) {
   bike.vel.y *= BIKE_FRICTION;
 
   // Cap speed
-  if (speed > MAX_SPEED) {
-    const ratio = MAX_SPEED / speed;
+  if (speed > maxSpeed) {
+    const ratio = maxSpeed / speed;
     bike.vel.x *= ratio;
     bike.vel.y *= ratio;
   }
