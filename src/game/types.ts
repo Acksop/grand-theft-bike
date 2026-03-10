@@ -34,6 +34,11 @@ export interface GameState {
     machinesTotal: number;
     hasPotatoes: boolean;
     computerHacked: boolean;
+    // Act 3 election
+    votesGathered: number;
+    votesNeeded: number;
+    hasVoted: boolean;
+    finalChoice: 'eco' | 'boycott' | null;
   };
   worldSize: Vector2;
   isPaused: boolean;

@@ -133,6 +133,7 @@ export default function GameView({ character }: GameViewProps) {
   const [dialog, setDialog] = useState<{ name: string; text: string } | null>(null);
   const [showAct2Intro, setShowAct2Intro] = useState(false);
   const [showAct3Intro, setShowAct3Intro] = useState(false);
+  const [showEnding, setShowEnding] = useState<{ type: string; title: string; text: string } | null>(null);
   const dialogTimeout = useRef<ReturnType<typeof setTimeout>>();
 
   // Check for Act 2 transition
@@ -172,6 +173,30 @@ export default function GameView({ character }: GameViewProps) {
       gs.act = 3;
       gs.missionId = 'election';
       gs.missionStatus = 'pending';
+      gs.missionData = {
+        flyersToDistribute: 0,
+        flyersDistributed: 0,
+        targetNPCs: [],
+        machinesSabotaged: 0,
+        machinesTotal: 3,
+        hasPotatoes: false,
+        computerHacked: false,
+        votesGathered: 0,
+        votesNeeded: 5,
+        hasVoted: false,
+        finalChoice: null
+      };
+      
+      // Add Act 3 NPCs - voting station area
+      gs.entities.push(
+        { id: 'urne', type: 'prop', pos: { x: 500, y: 1800 }, vel: { x: 0, y: 0 }, angle: 0, size: 25, color: '#fbbf24', health: 100, maxHealth: 100, meta: { name: 'Urne Electronique', dialog: 'Cliquez pour voter pour le scrutin final !' }},
+        { id: 'promoteur', type: 'npc', pos: { x: 700, y: 1750 }, vel: { x: 0, y: 0 }, angle: 0, size: 20, color: '#dc2626', health: 100, maxHealth: 100, meta: { name: 'Promoteur Immobilier', dialog: 'Mon éco-quartier va crear des emplois ! Vous êtes contre la croissance ?!' }},
+        { id: 'journaliste', type: 'npc', pos: { x: 400, y: 1700 }, vel: { x: 0, y: 0 }, angle: 0, size: 16, color: '#7c3aed', health: 100, maxHealth: 100, meta: { name: 'Journaliste', dialog: 'Intéressant... avez-vous un commentaire pour ma une ?' }},
+        { id: 'elecopro', type: 'npc', pos: { x: 600, y: 1850 }, vel: { x: 0, y: 0 }, angle: 0, size: 18, color: '#16a34a', health: 100, maxHealth: 100, meta: { name: 'Liste Écologique', dialog: 'Votre aide a été précieuse. Le peuple Vaîte vous en remercie !' }},
+        { id: 'electeur1', type: 'npc', pos: { x: 300, y: 1900 }, vel: { x: 0, y: 0 }, angle: 0, size: 15, color: '#64748b', health: 100, maxHealth: 100, meta: { name: 'Électeur', dialog: 'Hésitant entre les deux listes... Le verde OU le progrès ?' }},
+        { id: 'electeur2', type: 'npc', pos: { x: 800, y: 1950 }, vel: { x: 0, y: 0 }, angle: 0, size: 15, color: '#64748b', health: 100, maxHealth: 100, meta: { name: 'Électeur', dialog: 'J\'ai entendu dire que le chantier a été saboté. Enfin !' }}
+      );
+      
       setShowAct3Intro(true);
     }
   }, []);
@@ -288,6 +313,64 @@ export default function GameView({ character }: GameViewProps) {
                   setDialog({ name: 'MISSION COMPLÈTE!', text: 'Le chantier est paralisé! Retourne aux Vaites pour fêter ça!' });
                 }
               }
+              else {
+                setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+              }
+            }
+            // Act 3 - Election
+            else if (gs.act === 3) {
+              // Vote at the urn
+              if (ent.id === 'urne' && !gs.missionData.hasVoted) {
+                gs.missionStatus = 'active';
+                gs.missionData.hasVoted = true;
+                
+                // Determine ending based on karma
+                if (gs.karma >= 30) {
+                  // Good ending - eco wins
+                  gs.missionData.finalChoice = 'eco';
+                  gs.karma += 50;
+                  setShowEnding({
+                    type: 'good',
+                    title: 'VICTOIRE ÉCOLOGIQUE !',
+                    text: 'La liste verte l\'emporte aux élections ! Les Vaîtes sont sauvegardées. Tu es devenu une légende locale. Besançon te remercie.'
+                  });
+                } else if (gs.karma <= -20) {
+                  // Bad ending - beton wins
+                  gs.missionData.finalChoice = 'boycott';
+                  setShowEnding({
+                    type: 'bad',
+                    title: 'DÉFAITE...',
+                    text: 'Le promoteur l\'emporte. Les Vaêtes seront bétonnées. Mais la lutte continue dans l\'ombre...'
+                  });
+                } else {
+                  // Mixed ending
+                  gs.missionData.finalChoice = 'boycott';
+                  setShowEnding({
+                    type: 'mixed',
+                    title: 'RÉSULTATS MITIGÉS',
+                    text: 'Le nouveau conseil municipal reste ambigu sur le projet. Les négociations continuent... La bataille n\'est pas terminée.'
+                  });
+                }
+              }
+              // Talk to voters to gather support before voting
+              else if ((ent.id === 'electeur1' || ent.id === 'electeur2') && !gs.missionData.targetNPCs.includes(ent.id) && !gs.missionData.hasVoted) {
+                gs.missionData.targetNPCs.push(ent.id);
+                gs.missionData.votesGathered++;
+                gs.karma += 10;
+                if (gs.karma > 30) gs.karma = 30; // Cap karma
+                setDialog({ name: ent.meta.name, text: "Tu m'as convaincu ! Je voterai vert !" });
+              }
+              // Talk to promote - lose karma
+              else if (ent.id === 'promoteur' && !gs.missionData.hasVoted) {
+                gs.karma -= 15;
+                setDialog({ name: ent.meta.name, text: "Les écolos, c'est la fin des emplois ! Rejoignez le côté du progrès !" });
+              }
+              // Talk to elecopro - gain karma
+              else if (ent.id === 'elecopro' && !gs.missionData.hasVoted) {
+                gs.karma += 5;
+                setDialog({ name: ent.meta.name, text: "Chaque voix compte ! Va voter à l'urne, on a besoin de toi !" });
+              }
+              // Default dialog
               else {
                 setDialog({ name: ent.meta.name, text: ent.meta.dialog });
               }
@@ -414,15 +497,34 @@ export default function GameView({ character }: GameViewProps) {
               Ton karma déterminera l'issue de cette election..."
             </p>
             
-            <div className="mt-8 p-4 bg-amber-500/10 border border-amber-500/30 rounded">
-              <p className="text-amber-500 text-sm font-mono">
-                Bient&ocirc;t dans GTB: Grand Theft Bike
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                <span>Rends-toi au bureau de vote (sud-ouest)</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <span>Convaincs les &eacute;lectrices et &eacute;lecteurs ind&eacute;cis</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" style={{ animationDelay: '1s' }} />
+                <span>Fais pencher la balance pour ton camp !</span>
+              </div>
+            </div>
+            
+            <div className="mt-10 p-5 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+              <p className="text-amber-500/80 text-xs font-mono mb-2">STATUT DU KARMA</p>
+              <p className="text-foreground text-sm">
+                Ton karma actuel: <span className="font-bold text-primary">{initialState.karma}</span>
+              </p>
+              <p className="text-muted-foreground text-xs mt-2">
+                Karma &gt; 30: Victoire &eacute;colo | Karma &lt; -20: D&eacute;faite
               </p>
             </div>
             
             <div className="mt-12">
-              <p className="text-muted-foreground text-xs font-mono uppercase tracking-[0.3em]">
-                Merci d'avoir joué! Fin de la démo.
+              <p className="text-amber-500/60 text-xs font-mono uppercase tracking-[0.3em] animate-bounce">
+                Clique pour voter...
               </p>
             </div>
           </div>
@@ -442,6 +544,62 @@ export default function GameView({ character }: GameViewProps) {
           <div className="bg-background/90 border-2 border-accent/40 p-5 font-mono backdrop-blur-sm">
             <p className="text-accent text-xs uppercase font-bold mb-2 tracking-widest">{dialog.name}</p>
             <p className="text-foreground text-sm leading-relaxed">{dialog.text}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Ending Screen */}
+      {showEnding && (
+        <div 
+          className="absolute inset-0 z-50 flex items-center justify-center"
+          style={{
+            background: showEnding.type === 'good' 
+              ? 'radial-gradient(ellipse at center, #052e16 0%, #020617 70%)'
+              : showEnding.type === 'bad'
+              ? 'radial-gradient(ellipse at center, #450a0a 0%, #020617 70%)'
+              : 'radial-gradient(ellipse at center, #1e1b4b 0%, #020617 70%)',
+          }}
+        >
+          <div className="max-w-xl text-center p-12">
+            <div className="mb-8">
+              {showEnding.type === 'good' && (
+                <div className="text-6xl mb-4">🌳</div>
+              )}
+              {showEnding.type === 'bad' && (
+                <div className="text-6xl mb-4">🏚️</div>
+              )}
+              {showEnding.type === 'mixed' && (
+                <div className="text-6xl mb-4">⚖️</div>
+              )}
+            </div>
+            
+            <h1 className={`text-5xl md:text-6xl font-black mb-6 tracking-tight ${
+              showEnding.type === 'good' ? 'text-green-500' : 
+              showEnding.type === 'bad' ? 'text-red-500' : 'text-amber-500'
+            }`}>
+              {showEnding.title}
+            </h1>
+            
+            <p className="text-lg text-foreground/80 leading-relaxed mb-8 font-serif italic">
+              {showEnding.text}
+            </p>
+            
+            <div className="p-6 bg-background/50 border border-amber-500/30 rounded-lg mb-8">
+              <p className="text-muted-foreground text-sm mb-2">KARMA FINAL</p>
+              <p className="text-3xl font-bold text-primary">{hudState.karma}</p>
+            </div>
+            
+            <div className="space-y-4">
+              <button 
+                onClick={() => window.location.reload()}
+                className="px-8 py-3 bg-primary text-white font-bold rounded hover:bg-primary/80 transition-colors"
+              >
+                Rejouer
+              </button>
+              <p className="text-muted-foreground text-xs">
+                Merci d'avoir jou&eacute; &agrave; GTB: Grand Theft Bike !
+              </p>
+            </div>
           </div>
         </div>
       )}

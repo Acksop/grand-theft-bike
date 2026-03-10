@@ -125,9 +125,30 @@ export default function Hud({ state }: HudProps) {
               <p className="text-primary text-[10px] uppercase font-bold mb-1 tracking-widest" style={{ color: '#f59e0b' }}>
                 Acte 3 &mdash; Les Elections
               </p>
-              <p className="text-xs text-foreground/80 leading-relaxed">
-                Bient\u00f4t disponible...
-              </p>
+              {state.missionStatus === 'pending' && (
+                <p className="text-xs text-foreground/80 leading-relaxed">
+                  Va parler aux &eacute;lecteurs pour les convaincre,
+                  <br />puis rends-toi au <span className="text-amber-500 font-bold">bureau de vote</span>.
+                </p>
+              )}
+              {state.missionStatus === 'active' && !state.missionData.hasVoted && (
+                <div className="text-xs text-foreground/80 leading-relaxed space-y-1">
+                  <p>Va voter &agrave; l'urne !</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase text-muted-foreground">Soutiens:</span>
+                    <span className="text-primary font-bold">{state.missionData.votesGathered}</span>
+                    <span className="text-[10px] uppercase text-muted-foreground ml-2">Karma:</span>
+                    <span className="text-amber-500 font-bold">{state.karma}</span>
+                  </div>
+                </div>
+              )}
+              {state.missionData.hasVoted && (
+                <p className="text-xs text-foreground/80 leading-relaxed">
+                  <span className="text-amber-500 font-bold tracking-wider">VOTE ENREGISTR&Eacute; !</span>
+                  <br />
+                  D&eacute;couvrez le r&eacute;sultat...
+                </p>
+              )}
             </>
           )}
           
