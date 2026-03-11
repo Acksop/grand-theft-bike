@@ -24,7 +24,7 @@ export interface GameState {
   karma: number; // -100 (Béton) to 100 (Éco)
   missionId: string | null;
   missionStatus: 'pending' | 'active' | 'completed';
-  act: 1 | 2 | 3; // Current act
+  act: 1 | 2 | 3 | 4; // Current act (4 = RSE Workshop)
   missionData: {
     flyersToDistribute: number;
     flyersDistributed: number;
@@ -39,6 +39,13 @@ export interface GameState {
     votesNeeded: number;
     hasVoted: boolean;
     finalChoice: 'eco' | 'boycott' | null;
+    // Act 4 RSE Workshop
+    cupsCollected: number;
+    cupsTotal: number;
+    hasCoffeeAccepted: boolean;
+    workshopSabotaged: boolean;
+    hasTrophy: boolean; // Got the cup as trophy
+    workshopChoice: 'denounce' | 'accept' | 'sabotage' | null;
   };
   worldSize: Vector2;
   isPaused: boolean;

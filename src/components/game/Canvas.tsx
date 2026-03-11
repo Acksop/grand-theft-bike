@@ -133,6 +133,7 @@ export default function GameView({ character }: GameViewProps) {
   const [dialog, setDialog] = useState<{ name: string; text: string } | null>(null);
   const [showAct2Intro, setShowAct2Intro] = useState(false);
   const [showAct3Intro, setShowAct3Intro] = useState(false);
+  const [showAct4Intro, setShowAct4Intro] = useState(false);
   const [showEnding, setShowEnding] = useState<{ type: string; title: string; text: string } | null>(null);
   const dialogTimeout = useRef<ReturnType<typeof setTimeout>>();
 
@@ -319,38 +320,58 @@ export default function GameView({ character }: GameViewProps) {
             }
             // Act 3 - Election
             else if (gs.act === 3) {
-              // Vote at the urn
+              // Vote at the urn - transitions to Act 4 RSE Workshop
               if (ent.id === 'urne' && !gs.missionData.hasVoted) {
                 gs.missionStatus = 'active';
                 gs.missionData.hasVoted = true;
                 
-                // Determine ending based on karma
+                // Store election result
                 if (gs.karma >= 30) {
-                  // Good ending - eco wins
                   gs.missionData.finalChoice = 'eco';
                   gs.karma += 50;
-                  setShowEnding({
-                    type: 'good',
-                    title: 'VICTOIRE ÉCOLOGIQUE !',
-                    text: 'La liste verte l\'emporte aux élections ! Les Vaîtes sont sauvegardées. Tu es devenu une légende locale. Besançon te remercie.'
-                  });
                 } else if (gs.karma <= -20) {
-                  // Bad ending - beton wins
                   gs.missionData.finalChoice = 'boycott';
-                  setShowEnding({
-                    type: 'bad',
-                    title: 'DÉFAITE...',
-                    text: 'Le promoteur l\'emporte. Les Vaêtes seront bétonnées. Mais la lutte continue dans l\'ombre...'
-                  });
                 } else {
-                  // Mixed ending
                   gs.missionData.finalChoice = 'boycott';
-                  setShowEnding({
-                    type: 'mixed',
-                    title: 'RÉSULTATS MITIGÉS',
-                    text: 'Le nouveau conseil municipal reste ambigu sur le projet. Les négociations continuent... La bataille n\'est pas terminée.'
-                  });
                 }
+                
+                // Transition to Act 4 - RSE Workshop (instead of ending)
+                setTimeout(() => {
+                  gs.act = 4;
+                  gs.missionId = 'rse-workshop';
+                  gs.missionStatus = 'pending';
+                  gs.missionData = {
+                    ...gs.missionData,
+                    cupsCollected: 0,
+                    cupsTotal: 5,
+                    hasCoffeeAccepted: false,
+                    workshopSabotaged: false,
+                    hasTrophy: false,
+                    workshopChoice: null,
+                    targetNPCs: []
+                  };
+                  
+                  // Add RSE Workshop area - new location
+                  gs.player.pos = { x: 1500, y: 800 };
+                  
+                  // Add RSE Workshop NPCs
+                  gs.entities = [
+                    { id: 'formateur-rse', type: 'npc', pos: { x: 1550, y: 750 }, vel: { x: 0, y: 0 }, angle: 0, size: 18, color: '#0ea5e9', health: 100, maxHealth: 100, meta: { name: 'Formateur RSE', dialog: 'Bienvenue a notre atelier eco-responsable ! Nous servons le cafe dans des gobelets recyclables. Enfin... recyclables a 50% !' }},
+                    { id: 'participant1', type: 'npc', pos: { x: 1400, y: 800 }, vel: { x: 0, y: 0 }, angle: 0, size: 16, color: '#a855f7', health: 100, maxHealth: 100, meta: { name: 'Responsable RH', dialog: 'C\'est vrai que les gobelets sont jetables, mais on compense avec des formations !' }},
+                    { id: 'participant2', type: 'npc', pos: { x: 1450, y: 850 }, vel: { x: 0, y: 0 }, angle: 0, size: 15, color: '#f97316', health: 100, maxHealth: 100, meta: { name: 'Cadre', dialog: 'Je trouve ca un peu hypocrite moi aussi...' }},
+                    { id: 'participant3', type: 'npc', pos: { x: 1600, y: 800 }, vel: { x: 0, y: 0 }, angle: 0, size: 16, color: '#14b8a6', health: 100, maxHealth: 100, meta: { name: 'Stagiaire', dialog: 'C\'est mon troisieme atelier RSE cette semaine. On ne fait que parler...' }},
+                    { id: 'machine-cafe', type: 'prop', pos: { x: 1500, y: 700 }, vel: { x: 0, y: 0 }, angle: 0, size: 25, color: '#78716c', health: 100, maxHealth: 100, meta: { name: 'Machine a cafe', dialog: 'Une machine a cafe pro. Vous voulez un cafe ?' }},
+                    { id: 'gobelet1', type: 'prop', pos: { x: 1350, y: 780 }, vel: { x: 0, y: 0 }, angle: 0, size: 8, color: '#fef3c7', health: 100, maxHealth: 100, meta: { name: 'Gobelet', dialog: 'Un gobelet jetable. "eco-concu" selon l\'etiquette.' }},
+                    { id: 'gobelet2', type: 'prop', pos: { x: 1650, y: 820 }, vel: { x: 0, y: 0 }, angle: 0, size: 8, color: '#fef3c7', health: 100, maxHealth: 100, meta: { name: 'Gobelet', dialog: 'Encore un gobelet.' }},
+                    { id: 'gobelet3', type: 'prop', pos: { x: 1420, y: 900 }, vel: { x: 0, y: 0 }, angle: 0, size: 8, color: '#fef3c7', health: 100, maxHealth: 100, meta: { name: 'Gobelet', dialog: 'Celui-ci est a moitie vide.' }},
+                    { id: 'gobelet4', type: 'prop', pos: { x: 1580, y: 880 }, vel: { x: 0, y: 0 }, angle: 0, size: 8, color: '#fef3c7', health: 100, maxHealth: 100, meta: { name: 'Gobelet', dialog: 'Un gobelet abandonne. Symbole de l\'eco-hypocrisie.' }},
+                    { id: 'gobelet5', type: 'prop', pos: { x: 1500, y: 920 }, vel: { x: 0, y: 0 }, angle: 0, size: 8, color: '#fef3c7', health: 100, maxHealth: 100, meta: { name: 'Gobelet', dialog: 'Le dernier gobelet. Prenez-le comme trophee !' }},
+                  ];
+                  
+                  setShowAct4Intro(true);
+                }, 1500);
+                
+                setDialog({ name: 'VOTE ENREGISTRE', text: 'Apres les elections, direction un atelier RSE suspect...' });
               }
               // Talk to voters to gather support before voting
               else if ((ent.id === 'electeur1' || ent.id === 'electeur2') && !gs.missionData.targetNPCs.includes(ent.id) && !gs.missionData.hasVoted) {
@@ -369,6 +390,91 @@ export default function GameView({ character }: GameViewProps) {
               else if (ent.id === 'elecopro' && !gs.missionData.hasVoted) {
                 gs.karma += 5;
                 setDialog({ name: ent.meta.name, text: "Chaque voix compte ! Va voter à l'urne, on a besoin de toi !" });
+              }
+              // Default dialog
+              else {
+                setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+              }
+            }
+            
+            // Act 4 - RSE Workshop
+            else if (gs.act === 4) {
+              // Collect cups
+              if (ent.id.startsWith('gobelet') && !gs.missionData.targetNPCs.includes(ent.id)) {
+                gs.missionData.targetNPCs.push(ent.id);
+                gs.missionData.cupsCollected++;
+                gs.karma += 3;
+                setDialog({ name: 'TROPHEE', text: 'Un gobelet de plus ! Preuve de l\'eco-hypocrisie.' });
+                if (gs.missionData.cupsCollected >= gs.missionData.cupsTotal) {
+                  gs.missionData.hasTrophy = true;
+                }
+              }
+              // Accept coffee from machine
+              else if (ent.id === 'machine-cafe' && !gs.missionData.hasCoffeeAccepted) {
+                gs.missionData.hasCoffeeAccepted = true;
+                gs.karma -= 10;
+                gs.missionData.workshopChoice = 'accept';
+                setDialog({ name: 'Machine a cafe', text: '*Sirop amer* Vous acceptez le cafe. -10 karma. L\'eco-hypocrisie vous gagne...' });
+              }
+              // Interrogate trainer
+              else if (ent.id === 'formateur-rse' && gs.missionStatus === 'pending') {
+                gs.missionStatus = 'active';
+                setDialog({ name: ent.meta.name, text: 'Alors, que pensez-vous de notre atelier eco-responsable ?' });
+              }
+              // Denounce the hypocrisy
+              else if (ent.id === 'formateur-rse' && gs.missionStatus === 'active' && gs.missionData.workshopChoice === null) {
+                gs.missionData.workshopChoice = 'denounce';
+                gs.karma += 25;
+                setDialog({ name: 'DENONCIATION', text: '"UN DETAIL ? HYPOCRISIE ! Vous servez du cafe dans des gobelets jetables en vantant l\'eco-responsabilite ! C\'est du greenwashing pur !" *Les participants reagissent*' });
+              }
+              // Talk to participant who agrees
+              else if (ent.id === 'participant2' && gs.missionData.workshopChoice === 'denounce') {
+                gs.karma += 5;
+                setDialog({ name: ent.meta.name, text: 'Enfin quelqu\'un qui dit la verite ! Je suis d\'accord avec vous a 100%.' });
+              }
+              // Sabotage option - flip cups
+              else if (ent.id === 'machine-cafe' && gs.missionData.workshopChoice === 'denounce' && !gs.missionData.workshopSabotaged) {
+                gs.missionData.workshopSabotaged = true;
+                gs.missionData.workshopChoice = 'sabotage';
+                gs.karma += 15;
+                setDialog({ name: 'SABOTAGE', text: '*Vous renversez la machine a cafe !* CRASH ! Les gobelets volent partout ! Le formateur est horror...' });
+              }
+              // Complete workshop mission
+              else if ((ent.id === 'participant3' || ent.id === 'formateur-rse') && gs.missionStatus === 'active' && (gs.missionData.hasTrophy || gs.missionData.workshopChoice !== null)) {
+                gs.missionStatus = 'completed';
+                
+                // Determine final ending based on karma
+                const totalKarma = gs.karma;
+                
+                if (totalKarma >= 80) {
+                  // Best ending - eco warrior
+                  setShowEnding({
+                    type: 'good',
+                    title: 'HEROS ECOLOGIQUE !',
+                    text: 'Vous avez denonce l\'eco-hypocrisie avec style ! Les participants ont applaudi. Le trophee gobelet trone dans votre salon. Besancon est fiere de vous !'
+                  });
+                } else if (totalKarma >= 50) {
+                  // Good ending
+                  setShowEnding({
+                    type: 'good',
+                    title: 'MISSION RSE : SUCCES',
+                    text: 'L\' atelier a ete perturbe. Le message est passe. Vous quittez le batiment avec votre trophee et la tete haute.'
+                  });
+                } else if (totalKarma <= 0) {
+                  // Bad ending - sold out
+                  setShowEnding({
+                    type: 'bad',
+                    title: 'ECO-HYPOCRITE',
+                    text: 'Vous avez accepte le cafe et fait marche arriere. Le formateur vous a offert un badge "eco-citoyen". Vous ressortez sans trophee, hontex.'
+                  });
+                } else {
+                  // Mixed ending
+                  setShowEnding({
+                    type: 'mixed',
+                    title: 'MISSION RSE : PARTIEL',
+                    text: 'Vous avez fait quelques actions mais sans conviction totale. Le trophee gobelet vous rappelle que la lutte continue...'
+                  });
+                }
               }
               // Default dialog
               else {
@@ -525,6 +631,61 @@ export default function GameView({ character }: GameViewProps) {
             <div className="mt-12">
               <p className="text-amber-500/60 text-xs font-mono uppercase tracking-[0.3em] animate-bounce">
                 Clique pour voter...
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {showAct4Intro && (
+        <div 
+          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer"
+          style={{
+            background: 'radial-gradient(ellipse at center, #1e1b4b 0%, #020617 70%)',
+          }}
+          onClick={() => setShowAct4Intro(false)}
+        >
+          <div className="max-w-xl text-center p-12">
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <div className="w-16 h-1 bg-gradient-to-r from-transparent to-rose-500" />
+              <h2 className="text-rose-500 text-sm uppercase font-bold tracking-[0.8em]">ACTE 4</h2>
+              <div className="w-16 h-1 bg-gradient-to-l from-transparent to-rose-500" />
+            </div>
+            
+            <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight text-rose-500">
+              L'ATELIER RSE
+            </h1>
+            
+            <p className="text-lg text-foreground/80 leading-relaxed mb-6 font-serif italic">
+              &quot;Apr&egrave;s les &eacute;lections, un ami vous invite &agrave; un atelier &eacute;co-responsable.
+              Mais quelque chose ne va pas...&quot;
+            </p>
+            
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-rose-500" />
+                <span>Explorez la salle et collectez les gobelets</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <span>Confrontez le formateur RSE</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" style={{ animationDelay: '1s' }} />
+                <span>D&eacute;noncez l'hypocrisie ou sabotez l'atelier !</span>
+              </div>
+            </div>
+            
+            <div className="mt-10 p-5 bg-rose-500/10 border border-rose-500/30 rounded-lg">
+              <p className="text-rose-500/80 text-xs font-mono mb-2">CONSEIL</p>
+              <p className="text-foreground text-sm">
+                Collectez tous les gobelets et denoncez l'eco-hypocrisie !
+              </p>
+            </div>
+            
+            <div className="mt-12">
+              <p className="text-rose-500/60 text-xs font-mono uppercase tracking-[0.3em] animate-bounce">
+                Cliquez pour commencer...
               </p>
             </div>
           </div>

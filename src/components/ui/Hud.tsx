@@ -146,7 +146,43 @@ export default function Hud({ state }: HudProps) {
                 <p className="text-xs text-foreground/80 leading-relaxed">
                   <span className="text-amber-500 font-bold tracking-wider">VOTE ENREGISTR&Eacute; !</span>
                   <br />
-                  D&eacute;couvrez le r&eacute;sultat...
+                  Direction l'atelier RSE...
+                </p>
+              )}
+            </>
+          )}
+          
+          {/* Act 4 - RSE Workshop */}
+          {state.act === 4 && (
+            <>
+              <p className="text-primary text-[10px] uppercase font-bold mb-1 tracking-widest" style={{ color: '#f43f5e' }}>
+                Acte 4 &mdash; L'Atelier RSE
+              </p>
+              {state.missionStatus === 'pending' && (
+                <p className="text-xs text-foreground/80 leading-relaxed">
+                  Explorez la salle, collectez les gobelets,
+                  <br />puis <span className="text-rose-500 font-bold">confrontez</span> le formateur.
+                </p>
+              )}
+              {state.missionStatus === 'active' && !state.missionData.workshopChoice && (
+                <div className="text-xs text-foreground/80 leading-relaxed space-y-1">
+                  <p>Collectez les gobelets et denoncez l'hypocrisie !</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] uppercase text-muted-foreground">Gobelets:</span>
+                    <span className="text-primary font-bold">{state.missionData.cupsCollected}/{state.missionData.cupsTotal}</span>
+                    <span className="text-[10px] uppercase text-muted-foreground ml-2">Karma:</span>
+                    <span className="text-rose-500 font-bold">{state.karma}</span>
+                  </div>
+                  {state.missionData.hasTrophy && (
+                    <p className="text-rose-500 text-[10px] mt-1">TROPHEE : Gobelet collect&eacute; !</p>
+                  )}
+                </div>
+              )}
+              {state.missionData.workshopChoice && !state.missionData.hasVoted && (
+                <p className="text-xs text-foreground/80 leading-relaxed">
+                  <span className="text-rose-500 font-bold tracking-wider">ACTION LANC&Eacute;E !</span>
+                  <br />
+                  Parlez au formateur pour terminer...
                 </p>
               )}
             </>
