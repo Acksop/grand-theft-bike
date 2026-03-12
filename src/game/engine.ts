@@ -19,13 +19,9 @@ export function updateBike(bike: Entity, input: InputState) {
     bike.vel.y -= Math.sin(bike.angle) * accel * 0.5;
   }
 
-  // Turning (only when moving)
-  const speed = Math.sqrt(bike.vel.x ** 2 + bike.vel.y ** 2);
-  if (speed > 0.1) {
-    const turnFactor = Math.min(speed / 4, 1);
-    if (input.left) bike.angle -= BIKE_TURN_SPEED * turnFactor;
-    if (input.right) bike.angle += BIKE_TURN_SPEED * turnFactor;
-  }
+  // Turning (works even when stationary - rotation in place)
+  if (input.left) bike.angle -= BIKE_TURN_SPEED;
+  if (input.right) bike.angle += BIKE_TURN_SPEED;
 
   // Apply velocity
   bike.pos.x += bike.vel.x;
