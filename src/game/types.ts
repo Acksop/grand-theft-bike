@@ -25,6 +25,7 @@ export interface GameState {
   missionId: string | null;
   missionStatus: 'pending' | 'active' | 'completed';
   act: 1 | 2 | 3 | 4 | 5; // Current act (5 = Chantier Écocide)
+  isOnBike: boolean; // false in Act 4 (RSE Workshop) - player is on foot
   missionData: {
     flyersToDistribute: number;
     flyersDistributed: number;

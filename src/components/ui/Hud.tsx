@@ -36,13 +36,24 @@ export default function Hud({ state }: HudProps) {
           </p>
         </div>
 
-        {/* Speed */}
+        {/* Speed / On Foot indicator */}
         <div className="text-right" style={{ background: 'rgba(2,6,23,0.8)', border: '2px solid rgba(16,185,129,0.2)', padding: '12px 16px', backdropFilter: 'blur(4px)' }}>
-          <div className="flex items-center gap-2 justify-end mb-1">
-            <Bike className="w-5 h-5 text-primary" />
-            <span className="text-xl font-bold text-primary">{speed}<span className="text-xs ml-1 text-muted-foreground">km/h</span></span>
-          </div>
-          <p className="text-[9px] uppercase text-muted-foreground tracking-wider">Besan\u00e7on &bull; Les Va\u00eetes</p>
+          {state.isOnBike ? (
+            <>
+              <div className="flex items-center gap-2 justify-end mb-1">
+                <Bike className="w-5 h-5 text-primary" />
+                <span className="text-xl font-bold text-primary">{speed}<span className="text-xs ml-1 text-muted-foreground">km/h</span></span>
+              </div>
+              <p className="text-[9px] uppercase text-muted-foreground tracking-wider">Besan\u00e7on &bull; Les Va\u00eetes</p>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-2 justify-end mb-1">
+                <span className="text-xl font-bold text-amber-400">PI\u00c9TON</span>
+              </div>
+              <p className="text-[9px] uppercase text-muted-foreground tracking-wider">Atelier RSE</p>
+            </>
+          )}
         </div>
       </div>
 
@@ -225,7 +236,11 @@ export default function Hud({ state }: HudProps) {
           )}
           
           <p className="mt-2 text-[9px] text-muted-foreground animate-pulse">
-            Z/Q/S/D piloter &bull; ESPACE interagir
+            {state.isOnBike ? (
+              <>Z/Q/S/D piloter &bull; ESPACE interagir</>
+            ) : (
+              <>Z/Q/S/D marcher &bull; ESPACE interagir</>
+            )}
           </p>
         </div>
       </div>

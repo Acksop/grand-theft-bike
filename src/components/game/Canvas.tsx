@@ -113,6 +113,7 @@ export default function GameView({ character }: GameViewProps) {
     missionId: 'mobilisation',
     missionStatus: 'pending',
     act: 1,
+    isOnBike: true,
     missionData: {
       flyersToDistribute: 0,
       flyersDistributed: 0,
@@ -245,8 +246,8 @@ export default function GameView({ character }: GameViewProps) {
       // Check for Act transition
       checkActTransition(gs);
 
-      // Physics
-      updateBike(gs.player, inp);
+      // Physics - pass isOnBike to determine movement mode
+      updateBike(gs.player, inp, gs.isOnBike);
       checkCollisions(gs.player, WORLD_SIZE);
 
       // NPC interaction (Act 1 or Act 2)
@@ -342,6 +343,7 @@ export default function GameView({ character }: GameViewProps) {
                   gs.act = 4;
                   gs.missionId = 'rse-workshop';
                   gs.missionStatus = 'pending';
+                  gs.isOnBike = false; // Player is on foot in the workshop
                   gs.missionData = {
                     ...gs.missionData,
                     cupsCollected: 0,
@@ -450,6 +452,7 @@ export default function GameView({ character }: GameViewProps) {
                   setShowAct5Intro(true);
                   gs.act = 5;
                   gs.missionStatus = 'pending';
+                  gs.isOnBike = true; // Back on bike for Act 5
                   gs.missionData = {
                     ...gs.missionData,
                     flyersToDistribute: 0,

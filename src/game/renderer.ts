@@ -61,7 +61,7 @@ export function renderGame(ctx: CanvasRenderingContext2D, state: GameState) {
   }
 
   // Draw Player
-  drawPlayer(ctx, player);
+  drawPlayer(ctx, player, state.isOnBike);
 
   ctx.restore();
 
@@ -90,41 +90,65 @@ function drawTrees(ctx: CanvasRenderingContext2D, karma: number) {
   ctx.globalAlpha = 1;
 }
 
-function drawPlayer(ctx: CanvasRenderingContext2D, p: Entity) {
+function drawPlayer(ctx: CanvasRenderingContext2D, p: Entity, isOnBike: boolean = true) {
   ctx.save();
   ctx.translate(p.pos.x, p.pos.y);
-  ctx.rotate(p.angle);
 
-  // Bike frame
-  ctx.fillStyle = '#10b981';
-  ctx.fillRect(-12, -3, 24, 6);
+  if (isOnBike) {
+    // Bike mode - original rendering
+    ctx.rotate(p.angle);
 
-  // Wheels
-  ctx.fillStyle = '#1e293b';
-  ctx.fillRect(-14, -4, 6, 8);
-  ctx.fillRect(8, -4, 6, 8);
+    // Bike frame
+    ctx.fillStyle = '#10b981';
+    ctx.fillRect(-12, -3, 24, 6);
 
-  // L\u00e9o (head + dreads)
-  ctx.fillStyle = '#fde68a'; // skin
-  ctx.fillRect(-3, -7, 6, 6);
-  ctx.fillStyle = '#78350f'; // dreads
-  ctx.fillRect(-5, -9, 3, 4);
-  ctx.fillRect(2, -9, 3, 4);
-  ctx.fillRect(-4, -11, 8, 3);
+    // Wheels
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(-14, -4, 6, 8);
+    ctx.fillRect(8, -4, 6, 8);
+
+    // L\u00e9o (head + dreads)
+    ctx.fillStyle = '#fde68a'; // skin
+    ctx.fillRect(-3, -7, 6, 6);
+    ctx.fillStyle = '#78350f'; // dreads
+    ctx.fillRect(-5, -9, 3, 4);
+    ctx.fillRect(2, -9, 3, 4);
+    ctx.fillRect(-4, -11, 8, 3);
+  } else {
+    // On foot mode (Act 4 - RSE Workshop)
+    // Simple pedestrian sprite
+    ctx.rotate(p.angle);
+
+    // Body
+    ctx.fillStyle = p.color; // Use player color
+    ctx.fillRect(-4, -8, 8, 16);
+
+    // Head
+    ctx.fillStyle = '#fde68a'; // skin
+    ctx.fillRect(-3, -14, 6, 6);
+
+    // Legs (animated based on velocity)
+    ctx.fillStyle = '#1e293b';
+    const legOffset = Math.sin(Date.now() / 100) * 2;
+    ctx.fillRect(-3, 2, 2, 6 + legOffset);
+    ctx.fillRect(1, 2, 2, 6 - legOffset);
+  }
 
   ctx.restore();
 
-  // Direction indicator
-  const speed = Math.sqrt(p.vel.x ** 2 + p.vel.y ** 2);
-  if (speed > 0.5) {
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.3)';
-    ctx.beginPath();
-    ctx.arc(
-      p.pos.x + Math.cos(p.angle) * 30,
-      p.pos.y + Math.sin(p.angle) * 30,
-      4, 0, Math.PI * 2
-    );
-    ctx.fill();
+  // Direction indicator (only when moving on bike)
+  if (isOnBike) {
+    const speed = Math.sqrt(p.vel.x ** 2 + p.vel.y ** 2);
+    if (speed > 0.5) {
+      ctx.fillStyle = 'rgba(16, 185, 129, 0.3)';
+      ctx.beginPath();
+      ctx.arc(
+        p.pos.x + Math.cos(p.angle) * 30,
+        p.pos.y + Math.sin(p.angle) * 30,
+        4, 0, Math.PI * 2
+      );
+      ctx.fill();
+    }
   }
 }
 
