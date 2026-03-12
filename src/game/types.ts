@@ -24,7 +24,7 @@ export interface GameState {
   karma: number; // -100 (Béton) to 100 (Éco)
   missionId: string | null;
   missionStatus: 'pending' | 'active' | 'completed';
-  act: 1 | 2 | 3 | 4; // Current act (4 = RSE Workshop)
+  act: 1 | 2 | 3 | 4 | 5; // Current act (5 = Chantier Écocide)
   missionData: {
     flyersToDistribute: number;
     flyersDistributed: number;
@@ -46,6 +46,17 @@ export interface GameState {
     workshopSabotaged: boolean;
     hasTrophy: boolean; // Got the cup as trophy
     workshopChoice: 'denounce' | 'accept' | 'sabotage' | null;
+    // Act 5 Chantier Écocide
+    projectilesThrown: number;
+    targetsHit: number;
+    hasPotatoesForAct5: boolean;
+    graffitiDone: number;
+    graffitiTotal: number;
+    screenHacked: boolean;
+    vehiclesSabotaged: number;
+    vehiclesTotal: number;
+    presentationSabotaged: boolean;
+    finalAct5Choice: 'patate' | 'graffiti' | 'hack' | null;
   };
   worldSize: Vector2;
   isPaused: boolean;

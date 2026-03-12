@@ -134,6 +134,8 @@ export default function GameView({ character }: GameViewProps) {
   const [showAct2Intro, setShowAct2Intro] = useState(false);
   const [showAct3Intro, setShowAct3Intro] = useState(false);
   const [showAct4Intro, setShowAct4Intro] = useState(false);
+  const [showAct5Intro, setShowAct5Intro] = useState(false);
+  const [showHackPuzzle, setShowHackPuzzle] = useState(false);
   const [showEnding, setShowEnding] = useState<{ type: string; title: string; text: string } | null>(null);
   const dialogTimeout = useRef<ReturnType<typeof setTimeout>>();
 
@@ -443,36 +445,174 @@ export default function GameView({ character }: GameViewProps) {
               else if ((ent.id === 'participant3' || ent.id === 'formateur-rse') && gs.missionStatus === 'active' && (gs.missionData.hasTrophy || gs.missionData.workshopChoice !== null)) {
                 gs.missionStatus = 'completed';
                 
-                // Determine final ending based on karma
+                // Transition to Act 5 instead of ending
+                setTimeout(() => {
+                  setShowAct5Intro(true);
+                  gs.act = 5;
+                  gs.missionStatus = 'pending';
+                  gs.missionData = {
+                    ...gs.missionData,
+                    flyersToDistribute: 0,
+                    flyersDistributed: 0,
+                    targetNPCs: [],
+                    machinesSabotaged: 0,
+                    machinesTotal: 0,
+                    hasPotatoes: false,
+                    computerHacked: false,
+                    votesGathered: 0,
+                    votesNeeded: 0,
+                    hasVoted: false,
+                    finalChoice: null,
+                    cupsCollected: 0,
+                    cupsTotal: 0,
+                    hasCoffeeAccepted: false,
+                    workshopSabotaged: false,
+                    hasTrophy: false,
+                    workshopChoice: null,
+                    // Act 5 init
+                    projectilesThrown: 0,
+                    targetsHit: 0,
+                    hasPotatoesForAct5: true, // Start with potatoes!
+                    graffitiDone: 0,
+                    graffitiTotal: 3,
+                    screenHacked: false,
+                    vehiclesSabotaged: 0,
+                    vehiclesTotal: 3,
+                    presentationSabotaged: false,
+                    finalAct5Choice: null,
+                  };
+                  
+                  // Add Act 5 entities
+                  gs.entities = [
+                    // Player starts at entrance
+                    { ...gs.player, pos: { x: 400, y: 500 }, vel: { x: 0, y: 0 }, angle: -Math.PI/2 },
+                    // Promoter - giving presentation
+                    { id: 'promoteur', type: 'npc' as const, pos: { x: 400, y: 200 }, vel: { x: 0, y: 0 }, angle: 0, size: 24, color: '#1e3a5f', health: 100, maxHealth: 100, meta: { name: 'M. Gros-Portefeuille', dialog: 'Mesdames et messieurs, cet eco-quartier est une revolution durable ! 600 logements, tram, panneaux solaires...', type: 'promoter' }},
+                    // Engineers
+                    { id: 'ingenieur1', type: 'npc' as const, pos: { x: 300, y: 250 }, vel: { x: 0, y: 0 }, angle: 0, size: 20, color: '#64748b', health: 100, maxHealth: 100, meta: { name: 'Ingenieur 1', dialog: 'Les calculs sont faits, ca tient debout. C\'est tout ce qui compte.', type: 'engineer' }},
+                    { id: 'ingenieur2', type: 'npc' as const, pos: { x: 500, y: 250 }, vel: { x: 0, y: 0 }, angle: 0, size: 20, color: '#64748b', health: 100, maxHealth: 100, meta: { name: 'Ingenieur 2', dialog: 'Je prefere ne pas penser aux consequences environnementales...', type: 'engineer' }},
+                    // Workers
+                    { id: 'ouvrier1', type: 'npc' as const, pos: { x: 200, y: 400 }, vel: { x: 0, y: 0 }, angle: 0, size: 18, color: '#b45309', health: 100, maxHealth: 100, meta: { name: 'Ouvrier', dialog: 'On nous a dit eco, mais regarde ca... tout ce beton.', type: 'worker' }},
+                    { id: 'ouvrier2', type: 'npc' as const, pos: { x: 600, y: 400 }, vel: { x: 0, y: 0 }, angle: 0, size: 18, color: '#b45309', health: 100, maxHealth: 100, meta: { name: 'Ouvrier', dialog: 'Ca fait 20 ans que je bosse sur les chantiers, ca change pas.', type: 'worker' }},
+                    // Construction vehicles
+                    { id: 'pelleteuse1', type: 'prop' as const, pos: { x: 150, y: 350 }, vel: { x: 0, y: 0 }, angle: 0, size: 40, color: '#f59e0b', health: 100, maxHealth: 100, meta: { name: 'Pelleteuse', dialog: 'Une pelleteuse... symbolique du demolisseur.', type: 'vehicle', sabotaged: false }},
+                    { id: 'pelleteuse2', type: 'prop' as const, pos: { x: 650, y: 350 }, vel: { x: 0, y: 0 }, angle: 0, size: 40, color: '#f59e0b', health: 100, maxHealth: 100, meta: { name: 'Pelleteuse', dialog: 'Une autre pelleteuse... en attente de destruction.', type: 'vehicle', sabotaged: false }},
+                    { id: 'grue', type: 'prop' as const, pos: { x: 400, y: 100 }, vel: { x: 0, y: 0 }, angle: 0, size: 50, color: '#ef4444', health: 100, maxHealth: 100, meta: { name: 'Grue', dialog: 'La grue dominate le chantier. Detruisez-la !', type: 'vehicle', sabotaged: false }},
+                    // Presentation screen
+                    { id: 'ecran-pres', type: 'prop' as const, pos: { x: 400, y: 150 }, vel: { x: 0, y: 0 }, angle: 0, size: 60, color: '#3b82f6', health: 100, maxHealth: 100, meta: { name: 'Ecran de presentation', dialog: 'Un ecran affichant les plans de l\'eco-quartier. hackable !', type: 'screen', hacked: false }},
+                    // Graffiti spots
+                    { id: 'mur1', type: 'prop' as const, pos: { x: 100, y: 300 }, vel: { x: 0, y: 0 }, angle: 0, size: 30, color: '#4b5563', health: 100, maxHealth: 100, meta: { name: 'Mur', dialog: 'Un mur parfait pour un tag ZAD ! Appuyez sur ESPACE pour graffer.', type: 'graffiti-spot', graffed: false }},
+                    { id: 'mur2', type: 'prop' as const, pos: { x: 700, y: 300 }, vel: { x: 0, y: 0 }, angle: 0, size: 30, color: '#4b5563', health: 100, maxHealth: 100, meta: { name: 'Mur', dialog: 'Un autre mur pour taguer !', type: 'graffiti-spot', graffed: false }},
+                    { id: 'banniere', type: 'prop' as const, pos: { x: 250, y: 180 }, vel: { x: 0, y: 0 }, angle: 0, size: 40, color: '#22c55e', health: 100, maxHealth: 100, meta: { name: 'Banniere', dialog: 'La banniere du chantier. Parfaite pour un tag !', type: 'graffiti-spot', graffed: false }},
+                    // Potatoes source (ammo)
+                    { id: 'caisse-patates', type: 'prop' as const, pos: { x: 700, y: 500 }, vel: { x: 0, y: 0 }, angle: 0, size: 25, color: '#84cc16', health: 100, maxHealth: 100, meta: { name: 'Caisse de patates', dialog: 'Des patates bio ! Vos munitions pour le sabotage ! Appuyez sur ESPACE pour lancer.', type: 'ammo', ammo: 10 }},
+                  ];
+                  gs.worldSize = { x: 800, y: 600 };
+                }, 2000);
+              }
+              // Default dialog
+              else {
+                setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+              }
+            }
+            
+            // Act 5 - Chantier Écocide
+            else if (gs.act === 5) {
+              // Talk to promoter
+              if (ent.id === 'promoteur' && gs.missionStatus === 'pending') {
+                gs.missionStatus = 'active';
+                const charDialog = character.name === 'Léo' 
+                  ? '"Durable mon cul ! Vous betonnez mes patates !"'
+                  : character.name === 'Aïcha'
+                  ? '"Panneaux solaires sur PC jetables chaque annee ?"'
+                  : '"Eco-quartier = Zone A Detruire"';
+                setDialog({ name: character.name, text: charDialog });
+              }
+              // Get more potatoes
+              else if (ent.id === 'caisse-patates') {
+                gs.missionData.hasPotatoesForAct5 = true;
+                setDialog({ name: 'Caisse de patates', text: 'Vous prenez des patates bio. Appuyez sur ESPACE pres d\'une cible pour lancer !' });
+              }
+              // Throw potato at target
+              else if (ent.meta.type === 'vehicle' && gs.missionData.hasPotatoesForAct5 && !ent.meta.sabotaged) {
+                gs.missionData.projectilesThrown++;
+                gs.missionData.targetsHit++;
+                gs.missionData.vehiclesSabotaged++;
+                ent.meta.sabotaged = true;
+                gs.karma += 15;
+                gs.missionData.presentationSabotaged = true;
+                gs.missionData.finalAct5Choice = 'patate';
+                ent.color = '#1f2937'; // Darker when sabotaged
+                setDialog({ name: 'SABOTAGE !', text: '*PATATE BIO !* Elle explose sur la machine ! Le promoteur hurle ! +15 karma' });
+              }
+              // Throw potato at promoter
+              else if (ent.id === 'promoteur' && gs.missionData.hasPotatoesForAct5) {
+                gs.missionData.projectilesThrown++;
+                gs.missionData.targetsHit++;
+                gs.karma += 20;
+                gs.missionData.presentationSabotaged = true;
+                gs.missionData.finalAct5Choice = 'patate';
+                setDialog({ name: 'DIRECT !', text: '*SPLAT !* La patate atteint le promoteur en costard ! "MES VETEMENTS !" Le public acclame ! +20 karma' });
+              }
+              // Graffiti on walls/banners
+              else if (ent.meta.type === 'graffiti-spot' && !ent.meta.graffed && gs.missionStatus === 'active') {
+                ent.meta.graffed = true;
+                gs.missionData.graffitiDone++;
+                gs.karma += 10;
+                gs.missionData.presentationSabotaged = true;
+                gs.missionData.finalAct5Choice = 'graffiti';
+                ent.color = '#ec4899'; // Pink for graffiti
+                setDialog({ name: 'TAG !', text: '*SPRAY* "ZAD" apparait sur la surface ! Les ouvriers rient. +10 karma' });
+              }
+              // Hack the presentation screen
+              else if (ent.id === 'ecran-pres' && !ent.meta.hacked) {
+                gs.missionData.screenHacked = true;
+                gs.karma += 25;
+                gs.missionData.presentationSabotaged = true;
+                gs.missionData.finalAct5Choice = 'hack';
+                ent.meta.hacked = true;
+                ent.color = '#ef4444'; // Red when hacked
+                setDialog({ name: 'PIRATAGE !', text: '*HACK* Les plans sont remplaces par "ZAD" ! Le promoteur panique ! +25 karma' });
+              }
+              // Talk to workers - get info
+              else if ((ent.id === 'ouvrier1' || ent.id === 'ouvrier2') && gs.missionStatus === 'active') {
+                setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+              }
+              // Talk to engineers
+              else if (ent.id.startsWith('ingenieur') && gs.missionStatus === 'active') {
+                setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+              }
+              // Complete Act 5 mission
+              else if (ent.id === 'promoteur' && gs.missionStatus === 'active' && gs.missionData.presentationSabotaged) {
+                gs.missionStatus = 'completed';
+                gs.missionData.finalAct5Choice = gs.missionData.finalAct5Choice || 'graffiti';
+                
+                // Determine ending based on karma and actions
                 const totalKarma = gs.karma;
                 
-                if (totalKarma >= 80) {
-                  // Best ending - eco warrior
+                if (totalKarma >= 100) {
                   setShowEnding({
                     type: 'good',
-                    title: 'HEROS ECOLOGIQUE !',
-                    text: 'Vous avez denonce l\'eco-hypocrisie avec style ! Les participants ont applaudi. Le trophee gobelet trone dans votre salon. Besancon est fiere de vous !'
+                    title: 'HEROS DES VAITES !',
+                    text: 'Le chantier est paralyste ! Le promoteur s\'enfuit ! Les Vaites sont sauvedes ! Vous devenez une legende locale ! Besancon vous decerne la medaille de la resistance eco !'
                   });
-                } else if (totalKarma >= 50) {
-                  // Good ending
+                } else if (totalKarma >= 60) {
                   setShowEnding({
                     type: 'good',
-                    title: 'MISSION RSE : SUCCES',
-                    text: 'L\' atelier a ete perturbe. Le message est passe. Vous quittez le batiment avec votre trophee et la tete haute.'
+                    title: 'MISSION CHANTIER : SUCCES',
+                    text: 'La presentation a ete perturbee. Les medias en parlent. Le chantier est ralentit. Vous quittez les Vaites en heros.'
                   });
-                } else if (totalKarma <= 0) {
-                  // Bad ending - sold out
+                } else if (totalKarma <= 20) {
                   setShowEnding({
                     type: 'bad',
-                    title: 'ECO-HYPOCRITE',
-                    text: 'Vous avez accepte le cafe et fait marche arriere. Le formateur vous a offert un badge "eco-citoyen". Vous ressortez sans trophee, hontex.'
+                    title: 'ECHEC ECOLOGIQUE',
+                    text: 'Vous n\'avez pas fait assez. Le chantier continue. Le promoteur rit au visage. Les Vaites seront betonisees...'
                   });
                 } else {
-                  // Mixed ending
                   setShowEnding({
                     type: 'mixed',
-                    title: 'MISSION RSE : PARTIEL',
-                    text: 'Vous avez fait quelques actions mais sans conviction totale. Le trophee gobelet vous rappelle que la lutte continue...'
+                    title: 'MISSION CHANTIER : PARTIEL',
+                    text: 'Vous avez fait du bruit mais le chantier continue. La lutte n\'est pas finie...'
                   });
                 }
               }
@@ -686,6 +826,63 @@ export default function GameView({ character }: GameViewProps) {
             <div className="mt-12">
               <p className="text-rose-500/60 text-xs font-mono uppercase tracking-[0.3em] animate-bounce">
                 Cliquez pour commencer...
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {showAct5Intro && (
+        <div 
+          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer"
+          style={{
+            background: 'radial-gradient(ellipse at center, #0f172a 0%, #020617 70%)',
+          }}
+          onClick={() => setShowAct5Intro(false)}
+        >
+          <div className="max-w-xl text-center p-12">
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <div className="w-16 h-1 bg-gradient-to-r from-transparent to-red-500" />
+              <h2 className="text-red-500 text-sm uppercase font-bold tracking-[0.8em]">ACTE 5</h2>
+              <div className="w-16 h-1 bg-gradient-to-l from-transparent to-red-500" />
+            </div>
+            
+            <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight text-red-500">
+              LE CHANTIER ÉCOCIDE
+            </h1>
+            
+            <p className="text-lg text-foreground/80 leading-relaxed mb-6 font-serif italic">
+              "Le promoteur presente son 'eco-quartier'. 600 logements 'durables'. 
+              Les pelleteuses sont pretes. C'est maintenant ou jamais pour saboter la presentation !"
+            </p>
+            
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-red-500" />
+                <span>Lancez des patates bio sur les machines</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <span>Graffez 'ZAD' sur les murs et bannieres</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" style={{ animationDelay: '1s' }} />
+                <span>Piratez l'ecran de presentation</span>
+              </div>
+            </div>
+            
+            <div className="mt-10 p-5 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <p className="text-red-500/80 text-xs font-mono mb-2">CHOIX DU PERSONNAGE</p>
+              <p className="text-foreground text-sm font-bold">
+                {character.name === 'Léo' && '"Durable mon cul ! Vous betonnez mes patates !"'}
+                {character.name === 'Aïcha' && '"Panneaux solaires sur PC jetables ?"'}
+                {character.name === 'Jo' && '"Eco-quartier = Zone A Detruire"'}
+              </p>
+            </div>
+            
+            <div className="mt-12">
+              <p className="text-red-500/60 text-xs font-mono uppercase tracking-[0.3em] animate-bounce">
+                Cliquez pour saboter...
               </p>
             </div>
           </div>

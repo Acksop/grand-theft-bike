@@ -188,6 +188,42 @@ export default function Hud({ state }: HudProps) {
             </>
           )}
           
+          {/* Act 5 - Chantier Écocide */}
+          {state.act === 5 && (
+            <>
+              <p className="text-primary text-[10px] uppercase font-bold mb-1 tracking-widest" style={{ color: '#ef4444' }}>
+                Acte 5 &mdash; Le Chantier Écocide
+              </p>
+              {state.missionStatus === 'pending' && (
+                <p className="text-xs text-foreground/80 leading-relaxed">
+                  Parlez au promoteur pour commencer,
+                  <br />puis sabotez la presentation !
+                </p>
+              )}
+              {state.missionStatus === 'active' && !state.missionData.presentationSabotaged && (
+                <div className="text-xs text-foreground/80 leading-relaxed space-y-1">
+                  <p>Sabotez le chantier !</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {state.missionData.hasPotatoesForAct5 && (
+                      <span className="text-[10px] uppercase bg-green-600/30 text-green-400 px-1.5 py-0.5 rounded">PATATES</span>
+                    )}
+                    <span className="text-[10px] uppercase text-muted-foreground">Graffiti:</span>
+                    <span className="text-primary font-bold">{state.missionData.graffitiDone}/{state.missionData.graffitiTotal}</span>
+                    <span className="text-[10px] uppercase text-muted-foreground ml-2">Karma:</span>
+                    <span className="text-red-500 font-bold">{state.karma}</span>
+                  </div>
+                </div>
+              )}
+              {state.missionData.presentationSabotaged && (
+                <p className="text-xs text-foreground/80 leading-relaxed">
+                  <span className="text-red-500 font-bold tracking-wider">SABOTAGE EN COURS !</span>
+                  <br />
+                  Parlez au promoteur pour terminer...
+                </p>
+              )}
+            </>
+          )}
+          
           <p className="mt-2 text-[9px] text-muted-foreground animate-pulse">
             Z/Q/S/D piloter &bull; ESPACE interagir
           </p>
