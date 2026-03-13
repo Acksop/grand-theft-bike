@@ -116,8 +116,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, p: Entity, isOnBike: boolean 
     ctx.fillRect(-4, -11, 8, 3);
   } else {
     // On foot mode (Act 4 - RSE Workshop)
-    // Simple pedestrian sprite
-    ctx.rotate(p.angle);
+    // Simple pedestrian sprite - stays upright (facing UP by default in canvas coords)
 
     // Body
     ctx.fillStyle = p.color; // Use player color
@@ -129,7 +128,8 @@ function drawPlayer(ctx: CanvasRenderingContext2D, p: Entity, isOnBike: boolean 
 
     // Legs (animated based on velocity)
     ctx.fillStyle = '#1e293b';
-    const legOffset = Math.sin(Date.now() / 100) * 2;
+    const speed = Math.sqrt(p.vel.x ** 2 + p.vel.y ** 2);
+    const legOffset = speed > 0.1 ? Math.sin(Date.now() / 100) * 2 : 0;
     ctx.fillRect(-3, 2, 2, 6 + legOffset);
     ctx.fillRect(1, 2, 2, 6 - legOffset);
   }

@@ -83,11 +83,6 @@ export function updateBike(bike: Entity, input: InputState, isOnBike: boolean = 
       bike.vel.x *= ratio;
       bike.vel.y *= ratio;
     }
-    
-    // Update angle based on movement direction when on foot
-    if (speed > 0.1) {
-      bike.angle = Math.atan2(bike.vel.y, bike.vel.x);
-    }
   }
 }
 
