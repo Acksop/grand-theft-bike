@@ -509,6 +509,8 @@ export default function GameView({ character }: GameViewProps) {
                     { id: 'banniere', type: 'prop' as const, pos: { x: 250, y: 180 }, vel: { x: 0, y: 0 }, angle: 0, size: 40, color: '#22c55e', health: 100, maxHealth: 100, meta: { name: 'Banniere', dialog: 'La banniere du chantier. Parfaite pour un tag !', type: 'graffiti-spot', graffed: false }},
                     // Potatoes source (ammo)
                     { id: 'caisse-patates', type: 'prop' as const, pos: { x: 700, y: 500 }, vel: { x: 0, y: 0 }, angle: 0, size: 25, color: '#84cc16', health: 100, maxHealth: 100, meta: { name: 'Caisse de patates', dialog: 'Des patates bio ! Vos munitions pour le sabotage ! Appuyez sur ESPACE pour lancer.', type: 'ammo', ammo: 10 }},
+                    // Camille at the bottom - final narrative trigger
+                    { id: 'camille-act5', type: 'npc' as const, pos: { x: 400, y: 570 }, vel: { x: 0, y: 0 }, angle: 0, size: 16, color: '#ec4899', health: 100, maxHealth: 100, meta: { name: 'Camille', dialog: 'On est la ! Toute la ZAD est derriere toi. C\'est le moment de tout donner !', type: 'ally', spoken: false }},
                   ];
                   gs.worldSize = { x: 800, y: 600 };
                 }, 2000);
@@ -577,6 +579,70 @@ export default function GameView({ character }: GameViewProps) {
                 ent.color = '#ef4444'; // Red when hacked
                 setDialog({ name: 'PIRATAGE !', text: '*HACK* Les plans sont remplaces par "ZAD" ! Le promoteur panique ! +25 karma' });
               }
+              // Talk to Camille at the bottom - narrative + finish trigger
+              else if (ent.id === 'camille-act5') {
+                if (gs.missionStatus === 'pending') {
+                  setDialog({ name: 'Camille', text: 'Parle au promoteur d\'abord pour lancer le sabotage !' });
+                } else if (gs.missionStatus === 'active' && !gs.missionData.presentationSabotaged) {
+                  const hint = gs.missionData.hasPotatoesForAct5
+                    ? 'Lance tes patates sur les machines ou le promoteur ! Tague les murs ! Pirate l\'ecran !'
+                    : 'Va chercher la caisse de patates en haut a droite, ou tague les murs !';
+                  setDialog({ name: 'Camille', text: hint });
+                } else if (gs.missionStatus === 'active' && gs.missionData.presentationSabotaged) {
+                  // Trigger the ending via Camille
+                  gs.missionStatus = 'completed';
+                  const karma = gs.karma;
+                  const graffitiDone = gs.missionData.graffitiDone;
+                  const vehiclesSabotaged = gs.missionData.vehiclesSabotaged;
+                  const screenHacked = gs.missionData.screenHacked;
+                  const choice = gs.missionData.finalAct5Choice;
+
+                  // Rich epilogue text based on actions
+                  let epilogue = '';
+                  if (screenHacked && vehiclesSabotaged >= 2 && graffitiDone >= 2) {
+                    epilogue = 'Camille : "Tu as tout fait ! L\'ecran hacke, les machines sabotees, les murs tagges... Le promoteur a file sans demander son reste. Les Vaites restent !"';
+                  } else if (choice === 'hack') {
+                    epilogue = 'Camille : "Pirater l\'ecran c\'etait du genie ! Le public a tout vu. La presse a filme. Le chantier est suspendu 6 mois !"';
+                  } else if (choice === 'patate') {
+                    epilogue = 'Camille : "La patate dans le costard... une image qui va faire le tour de Besancon ! Le promoteur est la risee de la ville. On a gagne du temps !"';
+                  } else if (choice === 'graffiti') {
+                    epilogue = 'Camille : "Nos tags ZAD couvrent tout le chantier. La mairie ne peut plus ignorer notre message. La lutte continue !"';
+                  } else {
+                    epilogue = 'Camille : "C\'est un debut. Le chantier est perturbe. Maintenant on rentre et on planifie la suite."';
+                  }
+                  setDialog({ name: 'Camille', text: epilogue });
+
+                  setTimeout(() => {
+                    if (karma >= 100) {
+                      setShowEnding({
+                        type: 'good',
+                        title: 'HEROS DES VAITES !',
+                        text: `Le chantier est paralyse ! Le promoteur s'enfuit en taxis sous les tomates. Les Vaites sont sauvees ! Camille vous embrasse. Toute la ZAD fete ca autour d'un feu de camp. Besancon retient son souffle — et finalement choisit la friche.`,
+                      });
+                    } else if (karma >= 60) {
+                      setShowEnding({
+                        type: 'good',
+                        title: 'MISSION CHANTIER : VICTOIRE !',
+                        text: `La presentation a ete sabotee. Les medias locaux parlent de vous. Le chantier est mis en pause 6 mois. Camille sourit : "C'est pas fini, mais on a gagne cette bataille."`,
+                      });
+                    } else if (karma >= 30) {
+                      setShowEnding({
+                        type: 'mixed',
+                        title: 'RESISTANCE EN COURS...',
+                        text: `Vous avez fait du bruit. Pas assez pour arreter le chantier, mais assez pour que la mairie doive s'expliquer. Camille : "La lutte continue. On reviendra."`,
+                      });
+                    } else {
+                      setShowEnding({
+                        type: 'bad',
+                        title: 'LES VAITES TOMBENT...',
+                        text: `Le sabotage n'a pas suffi. Les pelleteuses reprennent le lendemain. Le promoteur celebre. Camille pleure devant ses patates arrachees. Mais la ZAD ne capitule jamais vraiment.`,
+                      });
+                    }
+                  }, 4500);
+                } else {
+                  setDialog({ name: 'Camille', text: 'On a fait ce qu\'on pouvait. La lutte continue, toujours.' });
+                }
+              }
               // Talk to workers - get info
               else if ((ent.id === 'ouvrier1' || ent.id === 'ouvrier2') && gs.missionStatus === 'active') {
                 setDialog({ name: ent.meta.name, text: ent.meta.dialog });
@@ -585,7 +651,7 @@ export default function GameView({ character }: GameViewProps) {
               else if (ent.id.startsWith('ingenieur') && gs.missionStatus === 'active') {
                 setDialog({ name: ent.meta.name, text: ent.meta.dialog });
               }
-              // Complete Act 5 mission
+              // Complete Act 5 mission - via promoteur directly
               else if (ent.id === 'promoteur' && gs.missionStatus === 'active' && gs.missionData.presentationSabotaged) {
                 gs.missionStatus = 'completed';
                 gs.missionData.finalAct5Choice = gs.missionData.finalAct5Choice || 'graffiti';
@@ -945,20 +1011,51 @@ export default function GameView({ character }: GameViewProps) {
               {showEnding.text}
             </p>
             
-            <div className="p-6 bg-background/50 border border-amber-500/30 rounded-lg mb-8">
-              <p className="text-muted-foreground text-sm mb-2">KARMA FINAL</p>
-              <p className="text-3xl font-bold text-primary">{hudState.karma}</p>
+            <div className="p-6 bg-background/50 border border-amber-500/30 rounded-lg mb-6">
+              <p className="text-muted-foreground text-sm mb-3 uppercase tracking-widest text-xs">Bilan de mission</p>
+              <div className="grid grid-cols-2 gap-3 text-sm mb-4">
+                <div className="text-left">
+                  <span className="text-muted-foreground text-xs">Karma final</span>
+                  <p className="text-2xl font-bold text-primary">{hudState.karma > 0 ? '+' : ''}{hudState.karma}</p>
+                </div>
+                <div className="text-left">
+                  <span className="text-muted-foreground text-xs">Graffitis ZAD</span>
+                  <p className="text-2xl font-bold text-pink-400">{hudState.missionData.graffitiDone}</p>
+                </div>
+                <div className="text-left">
+                  <span className="text-muted-foreground text-xs">Machines sabotées</span>
+                  <p className="text-2xl font-bold text-amber-400">{hudState.missionData.vehiclesSabotaged}</p>
+                </div>
+                <div className="text-left">
+                  <span className="text-muted-foreground text-xs">Écran piraté</span>
+                  <p className="text-2xl font-bold" style={{ color: hudState.missionData.screenHacked ? '#22c55e' : '#ef4444' }}>
+                    {hudState.missionData.screenHacked ? 'OUI' : 'NON'}
+                  </p>
+                </div>
+              </div>
+              {hudState.missionData.finalAct5Choice && (
+                <p className="text-xs text-muted-foreground border-t border-border/30 pt-3 mt-2">
+                  Action principale :{' '}
+                  <span className="text-foreground font-bold uppercase tracking-wider">
+                    {hudState.missionData.finalAct5Choice === 'hack' && '💻 Piratage'}
+                    {hudState.missionData.finalAct5Choice === 'patate' && '🥔 Patates bio'}
+                    {hudState.missionData.finalAct5Choice === 'graffiti' && '🖊️ Graffiti ZAD'}
+                  </span>
+                </p>
+              )}
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3">
               <button 
                 onClick={() => window.location.reload()}
-                className="px-8 py-3 bg-primary text-white font-bold rounded hover:bg-primary/80 transition-colors"
+                className="w-full px-8 py-3 font-bold rounded transition-colors text-white"
+                style={{ background: showEnding.type === 'good' ? '#065f46' : showEnding.type === 'bad' ? '#7f1d1d' : '#3730a3' }}
               >
                 Rejouer
               </button>
               <p className="text-muted-foreground text-xs">
-                Merci d'avoir jou&eacute; &agrave; GTB: Grand Theft Bike !
+                Merci d'avoir jou&eacute; &agrave; <span className="text-primary font-bold">GTB: Grand Theft Bike</span> !<br/>
+                <span className="text-[10px]">Les Va&icirc;tes existent vraiment. La lutte aussi.</span>
               </p>
             </div>
           </div>
