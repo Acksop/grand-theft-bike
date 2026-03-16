@@ -67,14 +67,17 @@ export default function Hud({ state }: HudProps) {
                 Acte 1 &mdash; La Mobilisation
               </p>
               {state.missionStatus === 'pending' && (
-                <p className="text-xs text-foreground/80 leading-relaxed">
-                  Retrouve <span className="text-accent font-bold">Camille</span> au camp de la ZAD.
-                  <br />
-                  <span className="text-muted-foreground italic text-[10px]">[*Les Va\u00eetes : lutte r\u00e9elle depuis 2018*]</span>
-                </p>
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    Retrouve <span className="text-accent font-bold">Camille</span> au camp de la ZAD.
+                  </p>
+                  <p className="text-[10px] text-accent/70 bg-accent/10 px-2 py-1 border-l border-accent/50 animate-pulse">
+                    AIDE : Direction l'EST (droite) pour le camp.
+                  </p>
+                </div>
               )}
               {state.missionStatus === 'active' && (
-                <div className="text-xs text-foreground/80 leading-relaxed space-y-1">
+                <div className="text-xs text-foreground/80 leading-relaxed space-y-2">
                   <p>Distribue les tracts dans le centre-ville.</p>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] uppercase text-muted-foreground">Tracts :</span>
@@ -82,14 +85,22 @@ export default function Hud({ state }: HudProps) {
                     <span className="text-[10px] uppercase text-muted-foreground ml-2">Sensis :</span>
                     <span className="text-accent font-bold">{state.missionData.flyersDistributed}/3</span>
                   </div>
+                  <p className="text-[10px] text-accent/70 bg-accent/10 px-2 py-1 border-l border-accent/50">
+                    AIDE : Va vers l'OUEST (gauche). Presse ESPACE pr&egrave;s des gens.
+                  </p>
                 </div>
               )}
               {state.missionStatus === 'completed' && (
-                <p className="text-xs text-foreground/80 leading-relaxed">
-                  <span className="text-primary font-bold tracking-wider">SENSIBILISATION R\u00c9USSIE !</span>
-                  <br />
-                  Retourne voir Camille aux Va\u00eetes.
-                </p>
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    <span className="text-primary font-bold tracking-wider">SENSIBILISATION R\u00c9USSIE !</span>
+                    <br />
+                    Retourne voir Camille aux Va\u00eetes.
+                  </p>
+                  <p className="text-[10px] text-primary/70 bg-primary/10 px-2 py-1 border-l border-primary/50 animate-pulse">
+                    AIDE : Reviens au camp &agrave; l'EST.
+                  </p>
+                </div>
               )}
             </>
           )}
@@ -101,31 +112,51 @@ export default function Hud({ state }: HudProps) {
                 Acte 2 &mdash; La R\u00e9sistance
               </p>
               {!state.missionData.hasPotatoes && state.missionStatus === 'pending' && (
-                <p className="text-xs text-foreground/80 leading-relaxed">
-                  Va chercher des <span className="text-accent font-bold">munitions</span> chez 
-                  Michel le mara\u00eecher au sud du chantier.
-                </p>
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    Va chercher des <span className="text-accent font-bold">munitions</span> chez 
+                    Michel le mara\u00eecher au sud du chantier.
+                  </p>
+                  <p className="text-[10px] text-accent/70 bg-accent/10 px-2 py-1 border-l border-accent/50 animate-pulse">
+                    AIDE : Michel est en BAS (sud) du chantier.
+                  </p>
+                </div>
               )}
               {state.missionData.hasPotatoes && state.missionStatus === 'active' && (
-                <div className="text-xs text-foreground/80 leading-relaxed space-y-1">
+                <div className="text-xs text-foreground/80 leading-relaxed space-y-2">
                   <p>Lance des patates sur les machines !</p>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] uppercase text-muted-foreground">Machines :</span>
                     <span className="text-primary font-bold">{state.missionData.machinesSabotaged}/{state.missionData.machinesTotal}</span>
                   </div>
                   {state.missionData.machinesSabotaged >= 3 && !state.missionData.computerHacked && (
-                    <p className="text-accent text-[10px] mt-1">
-                      &rarr; Pirate le PC du chef de chantier !
+                    <div className="space-y-1">
+                      <p className="text-accent text-[10px] mt-1">
+                        &rarr; Pirate le PC du chef de chantier !
+                      </p>
+                      <p className="text-[10px] text-accent/70 bg-accent/10 px-2 py-1 border-l border-accent/50">
+                        AIDE : Le PC est dans le container bleu.
+                      </p>
+                    </div>
+                  )}
+                  {state.missionData.machinesSabotaged < 3 && (
+                    <p className="text-[10px] text-accent/70 bg-accent/10 px-2 py-1 border-l border-accent/50">
+                      AIDE : Presse ESPACE pr&egrave;s des machines jaunes.
                     </p>
                   )}
                 </div>
               )}
               {state.missionStatus === 'completed' && (
-                <p className="text-xs text-foreground/80 leading-relaxed">
-                  <span className="text-primary font-bold tracking-wider">CHANTIER SABOT\u00c9 !</span>
-                  <br />
-                  Retourne aux Va\u00eetes f\u00eater \u00e7a !
-                </p>
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    <span className="text-primary font-bold tracking-wider">CHANTIER SABOT\u00c9 !</span>
+                    <br />
+                    Retourne aux Va\u00eetes f\u00eater \u00e7a !
+                  </p>
+                  <p className="text-[10px] text-primary/70 bg-primary/10 px-2 py-1 border-l border-primary/50 animate-pulse">
+                    AIDE : Reviens au camp &agrave; l'EST.
+                  </p>
+                </div>
               )}
             </>
           )}
@@ -137,13 +168,18 @@ export default function Hud({ state }: HudProps) {
                 Acte 3 &mdash; Les Elections
               </p>
               {state.missionStatus === 'pending' && (
-                <p className="text-xs text-foreground/80 leading-relaxed">
-                  Va parler aux &eacute;lecteurs pour les convaincre,
-                  <br />puis rends-toi au <span className="text-amber-500 font-bold">bureau de vote</span>.
-                </p>
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    Va parler aux &eacute;lecteurs pour les convaincre,
+                    <br />puis rends-toi au <span className="text-amber-500 font-bold">bureau de vote</span>.
+                  </p>
+                  <p className="text-[10px] text-amber-500/70 bg-amber-500/10 px-2 py-1 border-l border-amber-500/50 animate-pulse">
+                    AIDE : Convaincs les gens (NPCs gris) puis va vers l'OUEST (gauche).
+                  </p>
+                </div>
               )}
               {state.missionStatus === 'active' && !state.missionData.hasVoted && (
-                <div className="text-xs text-foreground/80 leading-relaxed space-y-1">
+                <div className="text-xs text-foreground/80 leading-relaxed space-y-2">
                   <p>Va voter &agrave; l'urne !</p>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] uppercase text-muted-foreground">Soutiens:</span>
@@ -151,14 +187,22 @@ export default function Hud({ state }: HudProps) {
                     <span className="text-[10px] uppercase text-muted-foreground ml-2">Karma:</span>
                     <span className="text-amber-500 font-bold">{state.karma}</span>
                   </div>
+                  <p className="text-[10px] text-amber-500/70 bg-amber-500/10 px-2 py-1 border-l border-amber-500/50">
+                    AIDE : Presse ESPACE pr&egrave;s de l'urne jaune.
+                  </p>
                 </div>
               )}
               {state.missionData.hasVoted && (
-                <p className="text-xs text-foreground/80 leading-relaxed">
-                  <span className="text-amber-500 font-bold tracking-wider">VOTE ENREGISTR&Eacute; !</span>
-                  <br />
-                  Direction l'atelier RSE...
-                </p>
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    <span className="text-amber-500 font-bold tracking-wider">VOTE ENREGISTR&Eacute; !</span>
+                    <br />
+                    Direction l'atelier RSE...
+                  </p>
+                  <p className="text-[10px] text-amber-500/70 bg-amber-500/10 px-2 py-1 border-l border-amber-500/50 animate-pulse">
+                    AIDE : Pr&eacute;pare-toi &agrave; confronter l'hypocrisie.
+                  </p>
+                </div>
               )}
             </>
           )}
@@ -170,13 +214,18 @@ export default function Hud({ state }: HudProps) {
                 Acte 4 &mdash; L'Atelier RSE
               </p>
               {state.missionStatus === 'pending' && (
-                <p className="text-xs text-foreground/80 leading-relaxed">
-                  Explorez la salle, collectez les gobelets,
-                  <br />puis <span className="text-rose-500 font-bold">confrontez</span> le formateur.
-                </p>
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    Explorez la salle, collectez les gobelets,
+                    <br />puis <span className="text-rose-500 font-bold">confrontez</span> le formateur.
+                  </p>
+                  <p className="text-[10px] text-rose-500/70 bg-rose-500/10 px-2 py-1 border-l border-rose-500/50 animate-pulse">
+                    AIDE : Ramasse les petits ronds jaunes au sol (ESPACE).
+                  </p>
+                </div>
               )}
               {state.missionStatus === 'active' && !state.missionData.workshopChoice && (
-                <div className="text-xs text-foreground/80 leading-relaxed space-y-1">
+                <div className="text-xs text-foreground/80 leading-relaxed space-y-2">
                   <p>Collectez les gobelets et denoncez l'hypocrisie !</p>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] uppercase text-muted-foreground">Gobelets:</span>
@@ -184,17 +233,25 @@ export default function Hud({ state }: HudProps) {
                     <span className="text-[10px] uppercase text-muted-foreground ml-2">Karma:</span>
                     <span className="text-rose-500 font-bold">{state.karma}</span>
                   </div>
+                  <p className="text-[10px] text-rose-500/70 bg-rose-500/10 px-2 py-1 border-l border-rose-500/50">
+                    AIDE : Parle au formateur bleu ou renverse la machine (ESPACE).
+                  </p>
                   {state.missionData.hasTrophy && (
                     <p className="text-rose-500 text-[10px] mt-1">TROPHEE : Gobelet collect&eacute; !</p>
                   )}
                 </div>
               )}
               {state.missionData.workshopChoice && !state.missionData.hasVoted && (
-                <p className="text-xs text-foreground/80 leading-relaxed">
-                  <span className="text-rose-500 font-bold tracking-wider">ACTION LANC&Eacute;E !</span>
-                  <br />
-                  Parlez au formateur pour terminer...
-                </p>
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    <span className="text-rose-500 font-bold tracking-wider">ACTION LANC&Eacute;E !</span>
+                    <br />
+                    Parlez au formateur pour terminer...
+                  </p>
+                  <p className="text-[10px] text-rose-500/70 bg-rose-500/10 px-2 py-1 border-l border-rose-500/50 animate-pulse">
+                    AIDE : Direction le Chantier &Eacute;cocide ensuite !
+                  </p>
+                </div>
               )}
             </>
           )}
@@ -206,13 +263,18 @@ export default function Hud({ state }: HudProps) {
                 Acte 5 &mdash; Le Chantier Écocide
               </p>
               {state.missionStatus === 'pending' && (
-                <p className="text-xs text-foreground/80 leading-relaxed">
-                  Parlez au promoteur pour commencer,
-                  <br />puis sabotez la presentation !
-                </p>
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    Parlez au promoteur pour commencer,
+                    <br />puis sabotez la presentation !
+                  </p>
+                  <p className="text-[10px] text-red-500/70 bg-red-500/10 px-2 py-1 border-l border-red-500/50 animate-pulse">
+                    AIDE : Le promoteur est en haut (bleu fonc&eacute;).
+                  </p>
+                </div>
               )}
               {state.missionStatus === 'active' && !state.missionData.presentationSabotaged && (
-                <div className="text-xs text-foreground/80 leading-relaxed space-y-1">
+                <div className="text-xs text-foreground/80 leading-relaxed space-y-2">
                   <p>Sabotez le chantier !</p>
                   <div className="flex flex-wrap items-center gap-2">
                     {state.missionData.hasPotatoesForAct5 && (
@@ -223,14 +285,22 @@ export default function Hud({ state }: HudProps) {
                     <span className="text-[10px] uppercase text-muted-foreground ml-2">Karma:</span>
                     <span className="text-red-500 font-bold">{state.karma}</span>
                   </div>
+                  <p className="text-[10px] text-red-500/70 bg-red-500/10 px-2 py-1 border-l border-red-500/50">
+                    AIDE : Vise les engins jaunes, tag les murs ou pirate l'Ecran !
+                  </p>
                 </div>
               )}
               {state.missionData.presentationSabotaged && (
-                <p className="text-xs text-foreground/80 leading-relaxed">
-                  <span className="text-red-500 font-bold tracking-wider">SABOTAGE EN COURS !</span>
-                  <br />
-                  Parlez au promoteur pour terminer...
-                </p>
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    <span className="text-red-500 font-bold tracking-wider">SABOTAGE EN COURS !</span>
+                    <br />
+                    Parlez au promoteur pour terminer...
+                  </p>
+                  <p className="text-[10px] text-red-500/70 bg-red-500/10 px-2 py-1 border-l border-red-500/50 animate-pulse">
+                    AIDE : Va voir Camille en BAS pour la fin narrative !
+                  </p>
+                </div>
               )}
             </>
           )}
