@@ -305,6 +305,56 @@ export default function Hud({ state }: HudProps) {
             </>
           )}
           
+          {/* Act 6 - Fontaine Granvelle */}
+          {state.act === 6 && (
+            <>
+              <p className="text-primary text-[10px] uppercase font-bold mb-1 tracking-widest" style={{ color: '#3b82f6' }}>
+                Acte 6 &mdash; La Fontaine Granvelle
+              </p>
+              {state.missionStatus === 'pending' && (
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    Allez à la fontaine (bleue) pour detourner l'eau.
+                  </p>
+                  <p className="text-[10px] text-blue-500/70 bg-blue-500/10 px-2 py-1 border-l border-blue-500/50 animate-pulse">
+                    AIDE : Presse ESPACE pres de la fontaine centrale.
+                  </p>
+                </div>
+              )}
+              {state.missionStatus === 'active' && (
+                <div className="text-xs text-foreground/80 leading-relaxed space-y-2">
+                  <p>Sauvez l'eau precieuse !</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] uppercase text-muted-foreground">Verres:</span>
+                    <span className="text-primary font-bold">{state.missionData.glassesCollected}</span>
+                    <span className="text-[10px] uppercase text-muted-foreground ml-2">Karma:</span>
+                    <span className="text-blue-500 font-bold">{state.karma}</span>
+                  </div>
+                  <p className="text-[10px] text-blue-500/70 bg-blue-500/10 px-2 py-1 border-l border-blue-500/50">
+                    AIDE : {state.missionData.glassesCollected > 0 ? "Videz l'eau au JARDIN (vert) en bas !" : "Ramasse les verres à la fontaine !"}
+                  </p>
+                  {!state.missionData.driveHacked && (
+                    <p className="text-accent text-[10px] mt-1">
+                      &rarr; Pirate l'ecran du DRIVE (vert fluo) !
+                    </p>
+                  )}
+                </div>
+              )}
+              {state.missionData.fountainHacked && state.missionData.driveHacked && (
+                <div className="space-y-2">
+                  <p className="text-xs text-foreground/80 leading-relaxed">
+                    <span className="text-blue-500 font-bold tracking-wider">EAU SECURISEE !</span>
+                    <br />
+                    Allez voir le Zadiste pour conclure.
+                  </p>
+                  <p className="text-[10px] text-blue-500/70 bg-blue-500/10 px-2 py-1 border-l border-blue-500/50 animate-pulse">
+                    AIDE : Parle au PNJ rose pres de la fontaine.
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+          
           <p className="mt-2 text-[9px] text-muted-foreground animate-pulse">
             {state.isOnBike ? (
               <>Z/Q/S/D piloter &bull; ESPACE interagir</>

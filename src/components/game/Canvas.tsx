@@ -121,7 +121,14 @@ export default function GameView({ character }: GameViewProps) {
       machinesSabotaged: 0,
       machinesTotal: 3,
       hasPotatoes: false,
-      computerHacked: false
+      computerHacked: false,
+      // Act 6 init
+      fountainHacked: false,
+      driveHacked: false,
+      glassesCollected: 0,
+      glassesTotal: 10,
+      waterRedirected: false,
+      waterWasted: 0,
     },
     worldSize: WORLD_SIZE,
     isPaused: false,
@@ -136,6 +143,7 @@ export default function GameView({ character }: GameViewProps) {
   const [showAct3Intro, setShowAct3Intro] = useState(false);
   const [showAct4Intro, setShowAct4Intro] = useState(false);
   const [showAct5Intro, setShowAct5Intro] = useState(false);
+  const [showAct6Intro, setShowAct6Intro] = useState(false);
   const [showHackPuzzle, setShowHackPuzzle] = useState(false);
   const [showEnding, setShowEnding] = useState<{ type: string; title: string; text: string } | null>(null);
   const dialogTimeout = useRef<ReturnType<typeof setTimeout>>();
@@ -613,31 +621,27 @@ export default function GameView({ character }: GameViewProps) {
                   setDialog({ name: 'Camille', text: epilogue });
 
                   setTimeout(() => {
-                    if (karma >= 100) {
-                      setShowEnding({
-                        type: 'good',
-                        title: 'HEROS DES VAITES !',
-                        text: `Le chantier est paralyse ! Le promoteur s'enfuit en taxis sous les tomates. Les Vaites sont sauvees ! Camille vous embrasse. Toute la ZAD fete ca autour d'un feu de camp. Besancon retient son souffle — et finalement choisit la friche.`,
-                      });
-                    } else if (karma >= 60) {
-                      setShowEnding({
-                        type: 'good',
-                        title: 'MISSION CHANTIER : VICTOIRE !',
-                        text: `La presentation a ete sabotee. Les medias locaux parlent de vous. Le chantier est mis en pause 6 mois. Camille sourit : "C'est pas fini, mais on a gagne cette bataille."`,
-                      });
-                    } else if (karma >= 30) {
-                      setShowEnding({
-                        type: 'mixed',
-                        title: 'RESISTANCE EN COURS...',
-                        text: `Vous avez fait du bruit. Pas assez pour arreter le chantier, mais assez pour que la mairie doive s'expliquer. Camille : "La lutte continue. On reviendra."`,
-                      });
-                    } else {
-                      setShowEnding({
-                        type: 'bad',
-                        title: 'LES VAITES TOMBENT...',
-                        text: `Le sabotage n'a pas suffi. Les pelleteuses reprennent le lendemain. Le promoteur celebre. Camille pleure devant ses patates arrachees. Mais la ZAD ne capitule jamais vraiment.`,
-                      });
-                    }
+                    // Transition to Act 6 instead of showing ending directly
+                    gs.act = 6;
+                    gs.missionId = 'fontaine';
+                    gs.missionStatus = 'pending';
+                    gs.player.pos = { x: 500, y: 1800 }; // Place Granvelle
+                    setShowAct6Intro(true);
+                    
+                    gs.entities = [
+                      { id: 'fontaine', type: 'prop', pos: { x: 500, y: 1700 }, vel: { x: 0, y: 0 }, angle: 0, size: 60, color: '#3b82f6', health: 100, maxHealth: 100, meta: { name: 'Fontaine High-Tech', dialog: 'Une fontaine connectee qui brille... et gaspille des litres d\'eau en pleine secheresse.', type: 'fountain', hacked: false }},
+                      { id: 'burger-fluo', type: 'prop', pos: { x: 700, y: 1750 }, vel: { x: 0, y: 0 }, angle: 0, size: 80, color: '#f472b6', health: 100, maxHealth: 100, meta: { name: 'Burger Fluo', dialog: 'Fast-food voisin. Ca sent la frite et le plastique.', type: 'restaurant' }},
+                      { id: 'drive-ecran', type: 'prop', pos: { x: 750, y: 1850 }, vel: { x: 0, y: 0 }, angle: 0, size: 40, color: '#4ade80', health: 100, maxHealth: 100, meta: { name: 'Ecran Drive', dialog: 'L\'ecran de commande. On peut y lire : "PLUS DE GLACONS POUR VOS SODAS !"', type: 'drive-screen', hacked: false }},
+                      { id: 'jardin-commu', type: 'prop', pos: { x: 300, y: 1850 }, vel: { x: 0, y: 0 }, angle: 0, size: 100, color: '#166534', health: 100, maxHealth: 100, meta: { name: 'Jardin Communautaire', dialog: 'Les plantes tirent la langue. Elles ont besoin d\'eau !', type: 'garden' }},
+                      // Act 6 NPCs
+                      { id: 'manager-burger', type: 'npc', pos: { x: 650, y: 1780 }, vel: { x: 0, y: 0 }, angle: 0, size: 18, color: '#ef4444', health: 100, maxHealth: 100, meta: { name: 'Manager Fluo', dialog: 'C\'est la catastrophe ! Sans glacons, les clients s\'en vont ! On veut de l\'eau !' }},
+                      { id: 'client-soiffe', type: 'npc', pos: { x: 720, y: 1900 }, vel: { x: 0, y: 0 }, angle: 0, size: 16, color: '#94a3b8', health: 100, maxHealth: 100, meta: { name: 'Client Drive', dialog: 'Je paie mon menu XL, je veux mes glacons !' }},
+                      { id: 'zadiste-granvelle', type: 'npc', pos: { x: 450, y: 1750 }, vel: { x: 0, y: 0 }, angle: 0, size: 16, color: '#ec4899', health: 100, maxHealth: 100, meta: { name: 'Zadiste', dialog: 'Détourne cette eau vers le jardin ! C\'est un crime de la gacher ici.' }},
+                      { id: 'verre1', type: 'prop', pos: { x: 550, y: 1720 }, vel: { x: 0, y: 0 }, angle: 0, size: 10, color: '#93c5fd', health: 100, maxHealth: 100, meta: { name: 'Verre d\'eau', type: 'glass' }},
+                      { id: 'verre2', type: 'prop', pos: { x: 480, y: 1680 }, vel: { x: 0, y: 0 }, angle: 0, size: 10, color: '#93c5fd', health: 100, maxHealth: 100, meta: { name: 'Verre d\'eau', type: 'glass' }},
+                      { id: 'verre3', type: 'prop', pos: { x: 520, y: 1750 }, vel: { x: 0, y: 0 }, angle: 0, size: 10, color: '#93c5fd', health: 100, maxHealth: 100, meta: { name: 'Verre d\'eau', type: 'glass' }},
+                    ];
+                    gs.worldSize = { x: 1000, y: 2000 };
                   }, 4500);
                 } else {
                   setDialog({ name: 'Camille', text: 'On a fait ce qu\'on pouvait. La lutte continue, toujours.' });
@@ -656,34 +660,91 @@ export default function GameView({ character }: GameViewProps) {
                 gs.missionStatus = 'completed';
                 gs.missionData.finalAct5Choice = gs.missionData.finalAct5Choice || 'graffiti';
                 
-                // Determine ending based on karma and actions
+                setTimeout(() => {
+                  gs.act = 6;
+                  gs.missionId = 'fontaine';
+                  gs.missionStatus = 'pending';
+                  gs.player.pos = { x: 500, y: 1800 }; 
+                  setShowAct6Intro(true);
+                  // Entities reset for Act 6 handled in setTimeout above
+                }, 2000);
+              }
+              // Default dialog
+              else {
+                setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+              }
+            }
+            // Act 6 - Fontaine Granvelle
+            else if (gs.act === 6) {
+              // Collect water glasses
+              if (ent.meta?.type === 'glass' && !gs.missionData.targetNPCs.includes(ent.id)) {
+                gs.missionData.targetNPCs.push(ent.id);
+                gs.missionData.glassesCollected++;
+                gs.player.meta.speedMultiplier = character.stats.speed * (1 - gs.missionData.glassesCollected * 0.05); // Speed decreases
+                gs.karma += 2;
+                setDialog({ name: 'VERRE D\'EAU', text: 'Vous ramassez un verre d\'eau. C\'est lourd... mais precieux !' });
+                if (gs.missionData.glassesCollected >= 3) {
+                  setDialog({ name: 'SOIF', text: 'Vous portez beaucoup d\'eau. Allez au jardin communautaire pour la vider !' });
+                }
+              }
+              // Empty glasses at community garden
+              else if (ent.meta?.type === 'garden' && gs.missionData.glassesCollected > 0) {
+                gs.karma += gs.missionData.glassesCollected * 5;
+                setDialog({ name: 'JARDIN', text: `Vous arrosez les plantes avec ${gs.missionData.glassesCollected} verres. Elles vous remercient ! +${gs.missionData.glassesCollected * 5} Karma` });
+                gs.missionData.glassesCollected = 0;
+                gs.player.meta.speedMultiplier = character.stats.speed; // Reset speed
+                gs.missionData.waterRedirected = true;
+              }
+              // Hack the fountain
+              else if (ent.meta?.type === 'fountain' && !gs.missionData.fountainHacked) {
+                gs.missionData.fountainHacked = true;
+                gs.karma += 30;
+                ent.color = '#10b981'; // Green when hacked
+                setDialog({ name: 'PIRATAGE FONTAINE', text: 'HACK REUSSI ! Le debit est reduit de 90%. L\'eau est detournee vers le reseau maraicher ! +30 Karma' });
+              }
+              // Hack the drive screen
+              else if (ent.meta?.type === 'drive-screen' && !gs.missionData.driveHacked) {
+                gs.missionData.driveHacked = true;
+                gs.karma += 15;
+                ent.color = '#ef4444'; // Red when hacked
+                setDialog({ name: 'DRIVE HACK', text: 'Vous piratez l\'ecran : "PAS D\'EAU, PAS DE GLACONS ! BUVEZ DE LA BOUE !" Le manager panique ! +15 Karma' });
+              }
+              // Talk to manager
+              else if (ent.id === 'manager-burger') {
+                if (gs.missionData.driveHacked) {
+                  setDialog({ name: ent.meta.name, text: 'Arretez ce piratage ! Mes clients veulent du soda glace !' });
+                } else {
+                  setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+                }
+              }
+              // Complete Act 6
+              else if (ent.id === 'zadiste-granvelle' && gs.missionData.fountainHacked && gs.missionData.driveHacked) {
+                gs.missionStatus = 'completed';
                 const totalKarma = gs.karma;
                 
-                if (totalKarma >= 100) {
-                  setShowEnding({
-                    type: 'good',
-                    title: 'HEROS DES VAITES !',
-                    text: 'Le chantier est paralyste ! Le promoteur s\'enfuit ! Les Vaites sont sauvedes ! Vous devenez une legende locale ! Besancon vous decerne la medaille de la resistance eco !'
-                  });
-                } else if (totalKarma >= 60) {
-                  setShowEnding({
-                    type: 'good',
-                    title: 'MISSION CHANTIER : SUCCES',
-                    text: 'La presentation a ete perturbee. Les medias en parlent. Le chantier est ralentit. Vous quittez les Vaites en heros.'
-                  });
-                } else if (totalKarma <= 20) {
-                  setShowEnding({
-                    type: 'bad',
-                    title: 'ECHEC ECOLOGIQUE',
-                    text: 'Vous n\'avez pas fait assez. Le chantier continue. Le promoteur rit au visage. Les Vaites seront betonisees...'
-                  });
-                } else {
-                  setShowEnding({
-                    type: 'mixed',
-                    title: 'MISSION CHANTIER : PARTIEL',
-                    text: 'Vous avez fait du bruit mais le chantier continue. La lutte n\'est pas finie...'
-                  });
-                }
+                setDialog({ name: 'Camille', text: 'La boucle est bouclee. Besancon a choisi son camp. La ville respire enfin.' });
+                
+                setTimeout(() => {
+                  if (totalKarma >= 120) {
+                    setShowEnding({
+                      type: 'good',
+                      title: 'LEGENDE ECO-URBAINE',
+                      text: 'Besancon est devenue la premiere ville 100% durable de France. Les Vaites sont un parc naturel, la fontaine Granvelle alimente les jardins, et le Burger Fluo sert des soupes bio. Vous etes le heros que la ville attendait.'
+                    });
+                  } else if (totalKarma >= 60) {
+                    setShowEnding({
+                      type: 'good',
+                      title: 'VICTOIRE CITOYENNE',
+                      text: 'Le projet d\'eco-quartier est annule. La mairie a compris le message. La lutte continue, mais aujourd\'hui, on fete la victoire !'
+                    });
+                  } else {
+                    setShowEnding({
+                      type: 'mixed',
+                      title: 'UN FUTUR INCERTAIN',
+                      text: 'Vous avez fait bouger les lignes, mais le beton gagne encore du terrain. La fontaine est reparee, le drive refonctionne... mais les graines de la resistance sont semees.'
+                    });
+                  }
+                }, 3000);
               }
               // Default dialog
               else {
@@ -716,8 +777,10 @@ export default function GameView({ character }: GameViewProps) {
     };
 
     frameRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(frameRef.current);
-  }, [checkActTransition, character.name]);
+    return () => {
+      cancelAnimationFrame(frameRef.current);
+    };
+  }, []);
 
   return (
     <div className="relative w-full h-screen overflow-hidden" style={{ background: '#020617' }}>
@@ -814,7 +877,7 @@ export default function GameView({ character }: GameViewProps) {
             
             <div className="mt-8 space-y-4">
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
                 <span>Rends-toi au bureau de vote (sud-ouest)</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
@@ -959,6 +1022,59 @@ export default function GameView({ character }: GameViewProps) {
       )}
       
       <canvas ref={canvasRef} className="pixel-art block" />
+      {showAct6Intro && (
+        <div 
+          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer"
+          style={{
+            background: 'radial-gradient(ellipse at center, #172554 0%, #020617 70%)',
+          }}
+          onClick={() => setShowAct6Intro(false)}
+        >
+          <div className="max-w-xl text-center p-12">
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <div className="w-16 h-1 bg-gradient-to-r from-transparent to-blue-500" />
+              <h2 className="text-blue-500 text-sm uppercase font-bold tracking-[0.8em]">ACTE 6</h2>
+              <div className="w-16 h-1 bg-gradient-to-l from-transparent to-blue-500" />
+            </div>
+            
+            <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight text-blue-400">
+              LA FONTAINE GRANVELLE
+            </h1>
+            
+            <p className="text-lg text-foreground/80 leading-relaxed mb-6 font-serif italic">
+              "La secheresse frappe Besancon. La fontaine Granvelle gaspille l'eau precieuse pour le plaisir des yeux, pendant que Burger Fluo voisin pleure ses glacons. Detournez cette eau vers ceux qui en ont vraiment besoin !"
+            </p>
+            
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-blue-500" />
+                <span>Piratez la fontaine pour detourner le flux</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" style={{ animationDelay: '0.5s' }} />
+                <span>Arrosez le jardin communautaire (poids augmente avec l'eau !)</span>
+              </div>
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" style={{ animationDelay: '1s' }} />
+                <span>Piratez l'ecran du drive de Burger Fluo</span>
+              </div>
+            </div>
+            
+            <div className="mt-10 p-5 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+              <p className="text-blue-500/80 text-xs font-mono mb-2">INFOS MISSION</p>
+              <p className="text-foreground text-sm font-bold">
+                Plus vous transportez de verres d'eau, plus vous etes LENT !
+              </p>
+            </div>
+            
+            <div className="mt-12">
+              <p className="text-blue-500/60 text-xs font-mono uppercase tracking-[0.3em] animate-bounce">
+                Cliquez pour sauver l'eau...
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       <Hud state={hudState} />
       {/* Character badge */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-slate-900/80 border border-primary/30 px-3 py-1 pixel-corners">

@@ -58,6 +58,31 @@ export function renderGame(ctx: CanvasRenderingContext2D, state: GameState) {
   // Draw Entities (NPCs)
   for (const entity of state.entities) {
     drawEntity(ctx, entity, player, state.missionData.targetNPCs.includes(entity.id));
+    
+    // Act 6 Specific Visuals
+    if (state.act === 6) {
+      if (entity.meta?.type === 'fountain' && !entity.meta.hacked) {
+        // Water particles effect
+        ctx.fillStyle = 'rgba(147, 197, 253, 0.6)';
+        for (let i = 0; i < 5; i++) {
+          const rx = (Math.random() - 0.5) * entity.size;
+          const ry = -Math.random() * 40 - 10;
+          ctx.beginPath();
+          ctx.arc(entity.pos.x + rx, entity.pos.y + ry, 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      
+      if (entity.meta?.type === 'restaurant') {
+        // Neon glow for Burger Fluo
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#f472b6';
+        ctx.strokeStyle = '#f472b6';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(entity.pos.x - entity.size/2, entity.pos.y - entity.size/2, entity.size, entity.size);
+        ctx.shadowBlur = 0;
+      }
+    }
   }
 
   // Draw Player

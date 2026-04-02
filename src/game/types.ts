@@ -24,7 +24,7 @@ export interface GameState {
   karma: number; // -100 (Béton) to 100 (Éco)
   missionId: string | null;
   missionStatus: 'pending' | 'active' | 'completed';
-  act: 1 | 2 | 3 | 4 | 5; // Current act (5 = Chantier Écocide)
+  act: 1 | 2 | 3 | 4 | 5 | 6; // Current act (6 = Fontaine Granvelle)
   isOnBike: boolean; // false in Act 4 (RSE Workshop) - player is on foot
   missionData: {
     flyersToDistribute: number;
@@ -58,6 +58,13 @@ export interface GameState {
     vehiclesTotal: number;
     presentationSabotaged: boolean;
     finalAct5Choice: 'patate' | 'graffiti' | 'hack' | null;
+    // Act 6 Fontaine Granvelle
+    fountainHacked: boolean;
+    driveHacked: boolean;
+    glassesCollected: number;
+    glassesTotal: number;
+    waterRedirected: boolean;
+    waterWasted: number;
   };
   worldSize: Vector2;
   isPaused: boolean;
