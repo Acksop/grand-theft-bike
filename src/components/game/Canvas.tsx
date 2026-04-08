@@ -537,7 +537,7 @@ export default function GameView({ character }: GameViewProps) {
                 gs.missionStatus = 'active';
                 const charDialog = character.name === 'Léo' 
                   ? '"Durable mon cul ! Vous betonnez mes patates !"'
-                  : character.name === 'Aïcha'
+                  : character.name === 'Sarah'
                   ? '"Panneaux solaires sur PC jetables chaque annee ?"'
                   : '"Eco-quartier = Zone A Detruire"';
                 setDialog({ name: character.name, text: charDialog });
@@ -1008,8 +1008,8 @@ export default function GameView({ character }: GameViewProps) {
               <p className="text-red-500/80 text-xs font-mono mb-2">CHOIX DU PERSONNAGE</p>
               <p className="text-foreground text-sm font-bold">
                 {character.name === 'Léo' && '"Durable mon cul ! Vous betonnez mes patates !"'}
-                {character.name === 'Aïcha' && '"Panneaux solaires sur PC jetables ?"'}
-                {character.name === 'Jo' && '"Eco-quartier = Zone A Detruire"'}
+                {character.name === 'Sarah' && '"Panneaux solaires sur PC jetables ?"'}
+                {character.name === 'Marc' && '"Eco-quartier = Zone A Detruire"'}
               </p>
             </div>
             

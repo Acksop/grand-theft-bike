@@ -7,8 +7,8 @@ interface AudioControllerProps {
 
 const CHARACTER_MUSIC: Record<string, string> = {
   leo: 'https://firebasestorage.googleapis.com/v0/b/blink-451505.firebasestorage.app/o/user-uploads%2FUZQ9Vyz8TgXm8l5Oq425336AyOB3%2FGTA_BikeLeo_Boucle_1__cbfac6bb.mp3?alt=media&token=da2cdae5-087f-4e02-9455-59b64ef2de38',
-  aicha: 'https://firebasestorage.googleapis.com/v0/b/blink-451505.firebasestorage.app/o/user-uploads%2FUZQ9Vyz8TgXm8l5Oq425336AyOB3%2FGTA_Bike_Boucle1__9e300b5c.mp3?alt=media&token=86d8c0e7-34c2-4aa7-ab82-9420b7e74852',
-  jo: 'https://firebasestorage.googleapis.com/v0/b/blink-451505.firebasestorage.app/o/user-uploads%2FUZQ9Vyz8TgXm8l5Oq425336AyOB3%2FGTA_Bike_Marc_Boucle_1__f9f86290.mp3?alt=media&token=5e51583e-8d8f-45ee-bb3c-b6e59eef1609',
+  sarah: 'https://firebasestorage.googleapis.com/v0/b/blink-451505.firebasestorage.app/o/user-uploads%2FUZQ9Vyz8TgXm8l5Oq425336AyOB3%2FGTA_Bike_Boucle1__9e300b5c.mp3?alt=media&token=86d8c0e7-34c2-4aa7-ab82-9420b7e74852',
+  marc: 'https://firebasestorage.googleapis.com/v0/b/blink-451505.firebasestorage.app/o/user-uploads%2FUZQ9Vyz8TgXm8l5Oq425336AyOB3%2FGTA_Bike_Marc_Boucle_1__f9f86290.mp3?alt=media&token=5e51583e-8d8f-45ee-bb3c-b6e59eef1609',
 };
 
 export default function AudioController({ characterId }: AudioControllerProps) {
