@@ -30,7 +30,7 @@ const CHARACTERS: CharacterType[] = [
   },
   {
     id: 'jo',
-    name: 'Jo',
+    name: 'Marc',
     description: 'Le doyen du quartier. Lent mais très résistant.',
     color: '#3b82f6',
     stats: { speed: 0.8, health: 150 }
