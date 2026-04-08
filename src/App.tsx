@@ -22,15 +22,15 @@ const CHARACTERS: CharacterType[] = [
     stats: { speed: 1, health: 100 }
   },
   {
-    id: 'sarah',
-    name: 'Sarah',
+    id: 'aicha',
+    name: 'Aïcha',
     description: 'L\'activiste du centre-ville. Rapide et agile.',
     color: '#ec4899',
     stats: { speed: 1.2, health: 80 }
   },
   {
-    id: 'marc',
-    name: 'Marc',
+    id: 'jo',
+    name: 'Jo',
     description: 'Le doyen du quartier. Lent mais très résistant.',
     color: '#3b82f6',
     stats: { speed: 0.8, health: 150 }

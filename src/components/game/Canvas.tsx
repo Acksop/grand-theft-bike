@@ -4,6 +4,7 @@ import { updateBike, checkCollisions } from '../../game/engine';
 import { renderGame } from '../../game/renderer';
 import { WORLD_SIZE } from '../../game/world';
 import Hud from '../ui/Hud';
+import AudioController from './AudioController';
 import { CharacterType } from '../../App';
 
 interface GameViewProps {
@@ -1022,6 +1023,7 @@ export default function GameView({ character }: GameViewProps) {
       )}
       
       <canvas ref={canvasRef} className="pixel-art block" />
+      <AudioController characterId={character.id} />
       {showAct6Intro && (
         <div 
           className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer"
