@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import GameView from './components/game/Canvas';
-import { TreePine, Bike, MapPin, User, ArrowRight } from 'lucide-react';
+import { TreePine, Bike, MapPin, User, ArrowRight, Info } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./components/ui/dialog";
 
 export type CharacterType = {
   id: string;
@@ -124,10 +131,41 @@ export default function App() {
             ))}
           </div>
 
-          <div className="text-center pt-8">
+          <div className="text-center pt-8 space-y-4">
             <p className="text-[10px] text-muted-foreground uppercase tracking-[0.3em]">
               Besançon • 2026 • Les Vaîtes Contre-Attaquent
             </p>
+            
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="inline-flex items-center gap-2 text-[10px] text-primary hover:text-primary/80 transition-colors uppercase font-bold tracking-widest cursor-pointer group">
+                  <Info className="w-3 h-3 group-hover:scale-110 transition-transform" />
+                  Crédits
+                </button>
+              </DialogTrigger>
+              <DialogContent className="bg-slate-950 border-slate-800 text-foreground sm:max-w-[425px] pixel-corners">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-black italic uppercase text-primary tracking-tighter">
+                    GTB : Crédits
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 py-4">
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Lead Développeur</p>
+                    <p className="text-lg font-bold text-foreground italic">Emmanuel ROY <span className="text-primary">A.K.A Acksop</span></p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">Images et Son</p>
+                    <p className="text-lg font-bold text-foreground italic">Pierre GOURVENNEC <span className="text-accent">A.K.A PiR²</span></p>
+                  </div>
+                  <div className="pt-4 border-t border-slate-800/50">
+                    <p className="text-[10px] text-muted-foreground leading-relaxed uppercase tracking-tighter">
+                      Produit avec amour et engagement pour la défense du quartier des Vaîtes.
+                    </p>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>

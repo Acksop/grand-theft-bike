@@ -150,6 +150,7 @@ export default function GameView({ character }: GameViewProps) {
   const [showAct5Intro, setShowAct5Intro] = useState(false);
   const [showAct6Intro, setShowAct6Intro] = useState(false);
   const [showHackPuzzle, setShowHackPuzzle] = useState(false);
+  const [showCredits, setShowCredits] = useState(false);
   const [showEnding, setShowEnding] = useState<{ type: string; title: string; text: string } | null>(null);
   const dialogTimeout = useRef<ReturnType<typeof setTimeout>>();
 
@@ -679,6 +680,7 @@ export default function GameView({ character }: GameViewProps) {
                 setDialog({ name: ent.meta.name, text: ent.meta.dialog });
               }
             }
+            
             // Act 6 - Fontaine Granvelle
             else if (gs.act === 6) {
               // Collect water glasses
@@ -1175,10 +1177,66 @@ export default function GameView({ character }: GameViewProps) {
               >
                 Rejouer
               </button>
+              
+              <button 
+                onClick={() => setShowCredits(true)}
+                className="w-full px-8 py-2 text-xs font-bold rounded border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400"
+              >
+                Afficher les crédits
+              </button>
+
               <p className="text-muted-foreground text-xs">
                 Merci d'avoir jou&eacute; &agrave; <span className="text-primary font-bold">GTB: Grand Theft Bike</span> !<br/>
                 <span className="text-[10px]">Les Va&icirc;tes existent vraiment. La lutte aussi.</span>
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Credits Popup */}
+      {showCredits && (
+        <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in p-6">
+          <div className="max-w-md w-full bg-slate-950 border-2 border-primary/30 p-8 pixel-corners relative shadow-[0_0_50px_rgba(16,185,129,0.2)]">
+            <button 
+              onClick={() => setShowCredits(false)}
+              className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+            
+            <h2 className="text-3xl font-black italic uppercase text-primary tracking-tighter mb-8 text-center">
+              GTB : CRÉDITS
+            </h2>
+            
+            <div className="space-y-8">
+              <div className="text-center">
+                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-[0.3em] mb-2">Lead Développeur</p>
+                <p className="text-xl font-bold text-foreground italic">Emmanuel ROY</p>
+                <p className="text-sm text-primary font-mono uppercase tracking-widest mt-1">A.K.A Acksop</p>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-[0.3em] mb-2">Images et Son</p>
+                <p className="text-xl font-bold text-foreground italic">Pierre GOURVENNEC</p>
+                <p className="text-sm text-accent font-mono uppercase tracking-widest mt-1">A.K.A PiR²</p>
+              </div>
+
+              <div className="pt-8 border-t border-slate-900 text-center">
+                <p className="text-xs text-muted-foreground/60 leading-relaxed uppercase tracking-tighter italic">
+                  "Pour que les Vaîtes restent vertes."
+                </p>
+                <p className="text-[10px] text-muted-foreground/40 mt-4 uppercase tracking-[0.2em]">
+                  Besançon • 2026
+                </p>
+              </div>
+
+              <button 
+                onClick={() => setShowCredits(false)}
+                className="w-full mt-4 px-6 py-3 bg-primary/10 border border-primary/30 hover:bg-primary/20 text-primary font-bold uppercase tracking-widest text-xs transition-all"
+              >
+                Fermer
+              </button>
             </div>
           </div>
         </div>

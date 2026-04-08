@@ -49,6 +49,11 @@ Le jeu se déroule en 6 chapitres évolutifs :
 *   **ESPACE** : Interagir / Lancer un projectile / Saboter
 *   **ENTRÉE** : Passer les dialogues
 
+## 👥 Crédits
+
+*   **Lead Développeur** : Emmanuel ROY (A.K.A Acksop)
+*   **Images et Son** : Pierre GOURVENNEC (A.K.A PiR²)
+
 ## 🚀 Installation locale
 
 ```bash
