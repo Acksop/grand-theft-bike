@@ -35,6 +35,7 @@ const CHARACTERS: CharacterType[] = [
     name: 'Marc',
     description: 'Le doyen du quartier. Lent mais très résistant.',
     color: '#3b82f6',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/blink-451505.firebasestorage.app/o/user-uploads%2FUZQ9Vyz8TgXm8l5Oq425336AyOB3%2FMarc__666802b0.png?alt=media&token=c63d841d-9f5d-4e89-b760-6958e43615a0',
     stats: { speed: 0.8, health: 150 }
   }
 ];
