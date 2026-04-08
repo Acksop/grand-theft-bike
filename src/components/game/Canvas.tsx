@@ -51,7 +51,11 @@ export default function GameView({ character }: GameViewProps) {
         color: '#ec4899',
         health: 100,
         maxHealth: 100,
-        meta: { name: 'Camille', dialog: `${character.name} ! Les pelleteuses arrivent demain. On doit mobiliser le quartier ! Prends ces tracts et distribue-les aux gens du centre-ville.` }
+        meta: { 
+          name: 'Camille', 
+          dialog: `${character.name} ! Les pelleteuses arrivent demain. On doit mobiliser le quartier ! Prends ces tracts et distribue-les aux gens du centre-ville.`,
+          spriteUrl: 'https://firebasestorage.googleapis.com/v0/b/blink-451505.firebasestorage.app/o/user-uploads%2FUZQ9Vyz8TgXm8l5Oq425336AyOB3%2F442f5f4a097a0c07d4390734376e02ff__19c9aebf.webp?alt=media&token=e3601175-de8c-453c-abe9-1d6ab037409b'
+        }
       },
       {
         id: 'mairesse',
@@ -524,7 +528,13 @@ export default function GameView({ character }: GameViewProps) {
                     // Potatoes source (ammo)
                     { id: 'caisse-patates', type: 'prop' as const, pos: { x: 700, y: 500 }, vel: { x: 0, y: 0 }, angle: 0, size: 25, color: '#84cc16', health: 100, maxHealth: 100, meta: { name: 'Caisse de patates', dialog: 'Des patates bio ! Vos munitions pour le sabotage ! Appuyez sur ESPACE pour lancer.', type: 'ammo', ammo: 10 }},
                     // Camille at the bottom - final narrative trigger
-                    { id: 'camille-act5', type: 'npc' as const, pos: { x: 400, y: 570 }, vel: { x: 0, y: 0 }, angle: 0, size: 16, color: '#ec4899', health: 100, maxHealth: 100, meta: { name: 'Camille', dialog: 'On est la ! Toute la ZAD est derriere toi. C\'est le moment de tout donner !', type: 'ally', spoken: false }},
+                    { id: 'camille-act5', type: 'npc' as const, pos: { x: 400, y: 570 }, vel: { x: 0, y: 0 }, angle: 0, size: 16, color: '#ec4899', health: 100, maxHealth: 100, meta: { 
+                      name: 'Camille', 
+                      dialog: 'On est la ! Toute la ZAD est derriere toi. C\'est le moment de tout donner !', 
+                      type: 'ally', 
+                      spoken: false,
+                      spriteUrl: 'https://firebasestorage.googleapis.com/v0/b/blink-451505.firebasestorage.app/o/user-uploads%2FUZQ9Vyz8TgXm8l5Oq425336AyOB3%2F442f5f4a097a0c07d4390734376e02ff__19c9aebf.webp?alt=media&token=e3601175-de8c-453c-abe9-1d6ab037409b'
+                    }},
                   ];
                   gs.worldSize = { x: 800, y: 600 };
                 }, 2000);

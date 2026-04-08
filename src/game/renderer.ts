@@ -211,15 +211,29 @@ function drawEntity(ctx: CanvasRenderingContext2D, entity: Entity, player: Entit
   ctx.save();
   ctx.translate(entity.pos.x, entity.pos.y);
 
-  // Body
-  ctx.fillStyle = entity.color;
-  const s = entity.size;
-  ctx.fillRect(-s / 2, -s / 2, s, s);
+  const spriteUrl = entity.meta?.spriteUrl;
+  const sprite = getSprite(spriteUrl);
 
-  // Eyes
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(-3, -4, 2, 2);
-  ctx.fillRect(1, -4, 2, 2);
+  if (sprite && sprite.complete) {
+    const drawSize = entity.size * 5; // Visual size adjustment
+    ctx.drawImage(
+      sprite,
+      -drawSize / 2,
+      -drawSize / 2,
+      drawSize,
+      drawSize
+    );
+  } else {
+    // Body
+    ctx.fillStyle = entity.color;
+    const s = entity.size;
+    ctx.fillRect(-s / 2, -s / 2, s, s);
+
+    // Eyes
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(-3, -4, 2, 2);
+    ctx.fillRect(1, -4, 2, 2);
+  }
 
   // Received flyer indicator
   if (hasFlyer) {
