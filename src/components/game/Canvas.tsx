@@ -34,7 +34,11 @@ export default function GameView({ character }: GameViewProps) {
       color: character.color,
       health: character.stats.health,
       maxHealth: character.stats.health,
-      meta: { characterId: character.id, speedMultiplier: character.stats.speed }
+      meta: { 
+        characterId: character.id, 
+        speedMultiplier: character.stats.speed, 
+        spriteUrl: character.imageUrl 
+      }
     },
     entities: [
       {

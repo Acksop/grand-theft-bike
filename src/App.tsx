@@ -7,6 +7,7 @@ export type CharacterType = {
   name: string;
   description: string;
   color: string;
+  imageUrl?: string;
   stats: {
     speed: number;
     health: number;
@@ -19,6 +20,7 @@ const CHARACTERS: CharacterType[] = [
     name: 'Léo',
     description: 'Le maraîcher des Vaîtes. Équilibré et déterminé.',
     color: '#10b981',
+    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/blink-451505.firebasestorage.app/o/user-uploads%2FUZQ9Vyz8TgXm8l5Oq425336AyOB3%2Flo__f84c2711.png?alt=media&token=7a890938-6a40-4ce1-a014-c276d949a87c',
     stats: { speed: 1, health: 100 }
   },
   {
@@ -67,8 +69,14 @@ export default function App() {
                 className="group relative bg-slate-900/50 border-2 border-slate-800 p-6 pixel-corners cursor-pointer transition-all hover:border-primary hover:bg-primary/5 hover:scale-105"
               >
                 <div className="flex justify-between items-start mb-4">
-                  <div className="p-3 bg-slate-800 group-hover:bg-primary/20 transition-colors">
-                    <User className="w-8 h-8" style={{ color: char.color }} />
+                  <div className="bg-slate-800 group-hover:bg-primary/10 transition-colors overflow-hidden flex items-center justify-center p-2">
+                    {char.imageUrl ? (
+                      <img src={char.imageUrl} alt={char.name} className="w-16 h-16 object-contain" />
+                    ) : (
+                      <div className="p-2">
+                        <User className="w-8 h-8" style={{ color: char.color }} />
+                      </div>
+                    )}
                   </div>
                   <div className="text-[10px] text-muted-foreground font-mono uppercase tracking-widest">
                     ID: {char.id}

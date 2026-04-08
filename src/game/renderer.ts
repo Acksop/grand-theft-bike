@@ -10,6 +10,18 @@ const ZONE_LABELS: Record<string, string> = {
   'zad-camp': 'CAMP ZAD',
 };
 
+const imageCache: Record<string, HTMLImageElement> = {};
+
+function getSprite(url: string): HTMLImageElement | null {
+  if (!url) return null;
+  if (!imageCache[url]) {
+    const img = new Image();
+    img.src = url;
+    imageCache[url] = img;
+  }
+  return imageCache[url];
+}
+
 export function renderGame(ctx: CanvasRenderingContext2D, state: GameState) {
   const { width, height } = ctx.canvas;
   const player = state.player;
@@ -120,25 +132,43 @@ function drawPlayer(ctx: CanvasRenderingContext2D, p: Entity, isOnBike: boolean 
   ctx.translate(p.pos.x, p.pos.y);
 
   if (isOnBike) {
-    // Bike mode - original rendering
-    ctx.rotate(p.angle);
+    const spriteUrl = p.meta?.spriteUrl;
+    const sprite = getSprite(spriteUrl);
 
-    // Bike frame
-    ctx.fillStyle = '#10b981';
-    ctx.fillRect(-12, -3, 24, 6);
+    if (sprite && sprite.complete) {
+      // Rotate based on bike angle
+      // Sprite is top-down facing "up", 0 angle in engine is "right"
+      ctx.rotate(p.angle + Math.PI / 2);
+      
+      const drawSize = p.size * 5; // Visual size for better clarity
+      ctx.drawImage(
+        sprite, 
+        -drawSize / 2, 
+        -drawSize / 2, 
+        drawSize, 
+        drawSize
+      );
+    } else {
+      // Bike mode - original rendering (fallback)
+      ctx.rotate(p.angle);
 
-    // Wheels
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(-14, -4, 6, 8);
-    ctx.fillRect(8, -4, 6, 8);
+      // Bike frame
+      ctx.fillStyle = '#10b981';
+      ctx.fillRect(-12, -3, 24, 6);
 
-    // L\u00e9o (head + dreads)
-    ctx.fillStyle = '#fde68a'; // skin
-    ctx.fillRect(-3, -7, 6, 6);
-    ctx.fillStyle = '#78350f'; // dreads
-    ctx.fillRect(-5, -9, 3, 4);
-    ctx.fillRect(2, -9, 3, 4);
-    ctx.fillRect(-4, -11, 8, 3);
+      // Wheels
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(-14, -4, 6, 8);
+      ctx.fillRect(8, -4, 6, 8);
+
+      // L\u00e9o (head + dreads)
+      ctx.fillStyle = '#fde68a'; // skin
+      ctx.fillRect(-3, -7, 6, 6);
+      ctx.fillStyle = '#78350f'; // dreads
+      ctx.fillRect(-5, -9, 3, 4);
+      ctx.fillRect(2, -9, 3, 4);
+      ctx.fillRect(-4, -11, 8, 3);
+    }
   } else {
     // On foot mode (Act 4 - RSE Workshop)
     // Simple pedestrian sprite - stays upright (facing UP by default in canvas coords)
