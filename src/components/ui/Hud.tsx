@@ -37,23 +37,32 @@ export default function Hud({ state }: HudProps) {
         </div>
 
         {/* Speed / On Foot indicator */}
-        <div className="text-right" style={{ background: 'rgba(2,6,23,0.8)', border: '2px solid rgba(16,185,129,0.2)', padding: '12px 16px', backdropFilter: 'blur(4px)' }}>
-          {state.isOnBike ? (
-            <>
-              <div className="flex items-center gap-2 justify-end mb-1">
-                <Bike className="w-5 h-5 text-primary" />
-                <span className="text-xl font-bold text-primary">{speed}<span className="text-xs ml-1 text-muted-foreground">km/h</span></span>
-              </div>
-              <p className="text-[9px] uppercase text-muted-foreground tracking-wider">Besan\u00e7on &bull; Les Va\u00eetes</p>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center gap-2 justify-end mb-1">
-                <span className="text-xl font-bold text-amber-400">PI\u00c9TON</span>
-              </div>
-              <p className="text-[9px] uppercase text-muted-foreground tracking-wider">Atelier RSE</p>
-            </>
+        <div className="flex items-center gap-4" style={{ background: 'rgba(2,6,23,0.8)', border: '2px solid rgba(16,185,129,0.2)', padding: '8px 16px', backdropFilter: 'blur(4px)' }}>
+          {state.player.meta?.spriteUrl && (
+            <img 
+              src={state.player.meta.spriteUrl} 
+              alt="Avatar" 
+              className="w-10 h-10 object-contain filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]"
+            />
           )}
+          <div className="text-right">
+            {state.isOnBike ? (
+              <>
+                <div className="flex items-center gap-2 justify-end mb-1">
+                  <Bike className="w-5 h-5 text-primary" />
+                  <span className="text-xl font-bold text-primary">{speed}<span className="text-xs ml-1 text-muted-foreground">km/h</span></span>
+                </div>
+                <p className="text-[9px] uppercase text-muted-foreground tracking-wider">Besan\u00e7on &bull; Les Va\u00eetes</p>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 justify-end mb-1">
+                  <span className="text-xl font-bold text-amber-400">PI\u00c9TON</span>
+                </div>
+                <p className="text-[9px] uppercase text-muted-foreground tracking-wider">Atelier RSE</p>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
