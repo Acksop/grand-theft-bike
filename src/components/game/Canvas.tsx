@@ -79,7 +79,11 @@ export default function GameView({ character }: GameViewProps) {
         color: '#f59e0b',
         health: 100,
         maxHealth: 100,
-        meta: { name: 'Sam (Brocanteur)', dialog: "Besan\u00e7on change, mon pote. Trop de b\u00e9ton, pas assez de vieux canap\u00e9s." }
+        meta: { 
+          name: 'Sam (Brocanteur)', 
+          dialog: "Besan\u00e7on change, mon pote. Trop de b\u00e9ton, pas assez de vieux canap\u00e9s.",
+          spriteUrl: 'https://firebasestorage.googleapis.com/v0/b/blink-451505.firebasestorage.app/o/user-uploads%2FUZQ9Vyz8TgXm8l5Oq425336AyOB3%2Fsam__41b5425c.png?alt=media&token=5ecfd3c1-6da8-4fa6-a53d-fad041e9c543'
+        }
       },
       {
         id: 'zadiste1',
