@@ -1,59 +1,63 @@
-# Enhanced Vite React TypeScript Template
+# 🚲 GTB: Grand Theft Bike (Les Vaîtes Contre-Attaquent)
 
-This template includes built-in detection for missing CSS variables between your Tailwind config and CSS files.
+**Grand Theft Bike (GTB)** est une aventure en monde ouvert 2D pixel-art, inspirée des premiers GTA, avec une touche satirique et écologique. Situé à **Besançon** pendant les élections municipales de 2026, le jeu vous plonge au cœur de la lutte pour la préservation des **Vaîtes**.
 
-## Features
+[![Aperçu du jeu](https://cdn.blink.new/screenshots/grand-theft-bike-kd5wighw.sites.blink.new-1775684064741.webp)](https://grand-theft-bike-kd5wighw.sites.blink.new)
 
-- **CSS Variable Detection**: Automatically detects if CSS variables referenced in `tailwind.config.cjs` are defined in `src/index.css`
-- **Enhanced Linting**: Includes ESLint, Stylelint, and custom CSS variable validation
-- **Shadcn/ui**: Pre-configured with all Shadcn components
-- **Modern Stack**: Vite + React + TypeScript + Tailwind CSS
+## 🌟 L'Histoire
 
-## Available Scripts
+Besançon se réveille avec la gueule de bois. La mairie prévoit de bétonner les jardins des Vaîtes pour construire un "éco-quartier" de pacotille. Incarnez l'un des trois résistants locaux et menez la lutte à travers 6 actes narratifs pour sauver les terres maraîchères de la ville.
+
+## 🎭 Les Personnages
+
+Choisissez votre héros, chacun ayant ses propres caractéristiques :
+
+*   **Léo** : Le maraîcher des Vaîtes. Équilibré et déterminé. (Vitesse: 1x, Santé: 100)
+*   **Sarah** : L'activiste du centre-ville. Rapide et agile. (Vitesse: 1.2x, Santé: 80)
+*   **Marc** : Le doyen du quartier. Lent mais extrêmement résistant. (Vitesse: 0.8x, Santé: 150)
+
+## 🗺️ Les Actes de la Résistance
+
+Le jeu se déroule en 6 chapitres évolutifs :
+
+1.  **Acte 1 : La Mobilisation** – Récupérez des tracts auprès de Camille à la ZAD et sensibilisez les passants du centre-ville.
+2.  **Acte 2 : La Résistance** – Passez à l'action ! Sabotez les pelleteuses du chantier avec des projectiles (patates bio) et piratez les plans du chef de chantier.
+3.  **Acte 3 : Les Élections** – Le jour J. Convainquez les derniers indécis avant de vous rendre aux urnes pour le scrutin final.
+4.  **Acte 4 : L'Atelier RSE** – Infiltrez un atelier "Responsabilité Sociétale des Entreprises" suspect. Explorez les lieux à pied et dénoncez l'hypocrisie du greenwashing.
+5.  **Acte 5 : Le Chantier Écocide** – Le conflit s'intensifie. Sabotez la présentation du promoteur par des graffitis, des piratages d'écrans et des actions directes.
+6.  **Acte 6 : La Fontaine Granvelle** – Le dénouement. Détournez l'eau de la fontaine pour arroser les jardins et piratez le Drive local pour faire passer votre message.
+
+## 🕹️ Gameplay & Mécaniques
+
+*   **Système de Karma** : Vos actions balancent entre **Éco** (vert) et **Béton** (rose). Vos choix influencent la fin du jeu.
+*   **Physique de Vélo** : Ressentez l'inertie, le poids et les dérapages sur les pavés bisontins.
+*   **Monde Ouvert** : Explorez une carte stylisée de Besançon incluant les Vaîtes, le centre-ville, la mairie et les rives du Doubs.
+*   **Missions Variées** : Du dialogue narratif au sabotage pur, en passant par le piratage informatique.
+
+## 🛠️ Stack Technique
+
+*   **Framework** : React + Vite
+*   **Rendu** : HTML5 Canvas API (pour une performance fluide sur vieux matériel)
+*   **Style** : Tailwind CSS (Design system pixel-art & Neo-Brutalism)
+*   **Icônes** : Lucide React
+*   **Animations** : CSS Animations & Framer Motion (Transitions d'actes)
+*   **Backend** : Blink SDK (Authentification & Base de données)
+
+## ⌨️ Commandes
+
+*   **Z / Q / S / D** (ou Flèches) : Se déplacer / Piloter le vélo
+*   **ESPACE** : Interagir / Lancer un projectile / Saboter
+*   **ENTRÉE** : Passer les dialogues
+
+## 🚀 Installation locale
 
 ```bash
-# Run all linting (includes CSS variable check)
-npm run lint
+# Installer les dépendances
+bun install
 
-# Check only CSS variables
-npm run check:css-vars
-
-# Individual linting
-npm run lint:js    # ESLint
-npm run lint:css   # Stylelint
+# Lancer le serveur de développement
+bun dev
 ```
 
-## CSS Variable Detection
-
-The template includes a custom script that:
-
-1. **Parses `tailwind.config.cjs`** to find all `var(--variable)` references
-2. **Parses `src/index.css`** to find all defined CSS variables (`--variable:`)
-3. **Cross-references** them to find missing definitions
-4. **Reports undefined variables** with clear error messages
-
-### Example Output
-
-When CSS variables are missing:
-```
-❌ Undefined CSS variables found in tailwind.config.cjs:
-   --sidebar-background
-   --sidebar-foreground
-   --sidebar-primary
-
-Add these variables to src/index.css
-```
-
-When all variables are defined:
-```
-✅ All CSS variables in tailwind.config.cjs are defined
-```
-
-## How It Works
-
-The detection happens during the `npm run lint` command, which will:
-- Exit with error code 1 if undefined variables are found
-- Show exactly which variables need to be added to your CSS file
-- Integrate seamlessly with your development workflow
-
-This prevents runtime CSS issues where Tailwind classes reference undefined CSS variables.
+---
+*Besançon • 2026 • Les Vaîtes Contre-Attaquent*
