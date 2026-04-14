@@ -68,6 +68,7 @@ export interface GameState {
   };
   worldSize: Vector2;
   isPaused: boolean;
+  lastInteractionTime?: number;
 }
 
 export interface InputState {

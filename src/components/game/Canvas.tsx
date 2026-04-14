@@ -270,44 +270,50 @@ export default function GameView({ character }: GameViewProps) {
 
       // Physics - pass isOnBike to determine movement mode
       updateBike(gs.player, inp, gs.isOnBike);
-      checkCollisions(gs.player, WORLD_SIZE);
+      checkCollisions(gs.player, gs.worldSize || WORLD_SIZE);
 
-      // NPC interaction (Act 1 or Act 2)
+      // NPC interaction
       if (inp.action) {
-        for (const ent of gs.entities) {
-          const dx = ent.pos.x - gs.player.pos.x;
-          const dy = ent.pos.y - gs.player.pos.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 60 && ent.meta?.dialog) {
-            // Mission Logic - Act 1
-            if (gs.act === 1) {
-              if (ent.id === 'camille' && gs.missionStatus === 'pending') {
-                gs.missionStatus = 'active';
-                gs.missionData.flyersToDistribute = 5;
-                setDialog({ name: ent.meta.name, text: "Tiens, prends ces 5 tracts. Distribue-les aux gens dans le centre-ville (à l'ouest) !" });
-              } else if (gs.missionStatus === 'active' && gs.missionData.flyersToDistribute > 0) {
-                if (!gs.missionData.targetNPCs.includes(ent.id) && ent.id !== 'camille' && ent.id !== 'zadiste1') {
-                  gs.missionData.targetNPCs.push(ent.id);
-                  gs.missionData.flyersToDistribute--;
-                  gs.missionData.flyersDistributed++;
-                  gs.karma += 5;
-                  setDialog({ name: ent.meta.name, text: "Ah, merci ! Je vais lire ça." });
-                  if (gs.missionData.flyersDistributed >= 3) {
-                    gs.missionStatus = 'completed';
-                    setDialog({ name: "Mission accomplie", text: "Tu as sensibiliser assez de gens ! Retourne voir Camille." });
+        const now = Date.now();
+        if (!gs.lastInteractionTime || now - gs.lastInteractionTime > 500) {
+          for (const ent of gs.entities) {
+            const dx = ent.pos.x - gs.player.pos.x;
+            const dy = ent.pos.y - gs.player.pos.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 60 && ent.meta?.dialog) {
+              gs.lastInteractionTime = now;
+              // Mission Logic - Act 1
+              if (gs.act === 1) {
+                if (ent.id === 'camille' && gs.missionStatus === 'pending') {
+                  gs.missionStatus = 'active';
+                  gs.missionData.flyersToDistribute = 5;
+                  setDialog({ name: ent.meta.name, text: "Tiens, prends ces 5 tracts. Distribue-les aux gens dans le centre-ville (à l'ouest) !" });
+                } else if (gs.missionStatus === 'active' && gs.missionData.flyersToDistribute > 0) {
+                  if (!gs.missionData.targetNPCs.includes(ent.id) && ent.id !== 'camille' && ent.id !== 'zadiste1') {
+                    gs.missionData.targetNPCs.push(ent.id);
+                    gs.missionData.flyersToDistribute--;
+                    gs.missionData.flyersDistributed++;
+                    gs.karma += 5;
+                    setDialog({ name: ent.meta.name, text: "Ah, merci ! Je vais lire ça." });
+                    if (gs.missionData.flyersDistributed >= 3) {
+                      gs.missionStatus = 'completed';
+                      setDialog({ name: "Mission accomplie", text: "Tu as sensibilisé assez de gens ! Retourne voir Camille." });
+                    }
+                  } else if (ent.id === 'camille' && gs.missionStatus === 'completed') {
+                     setDialog({ name: 'Camille', text: `Super boulot ${character.name} ! On commence à se faire entendre. Prépare-toi pour la Suite...` });
+                     gs.karma += 10;
+                  } else {
+                     setDialog({ name: ent.meta.name, text: ent.meta.dialog });
                   }
                 } else if (ent.id === 'camille' && gs.missionStatus === 'completed') {
                    setDialog({ name: 'Camille', text: `Super boulot ${character.name} ! On commence à se faire entendre. Prépare-toi pour la Suite...` });
                    gs.karma += 10;
                 } else {
-                   setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+                  setDialog({ name: ent.meta.name, text: ent.meta.dialog });
                 }
-              } else {
-                setDialog({ name: ent.meta.name, text: ent.meta.dialog });
               }
-            }
-            // Mission Logic - Act 2
-            else if (gs.act === 2) {
+              // Mission Logic - Act 2
+              else if (gs.act === 2) {
               // Get potatoes from Michel
               if (ent.id === 'maraicher' && !gs.missionData.hasPotatoes && gs.missionStatus === 'pending') {
                 gs.missionStatus = 'active';
@@ -508,9 +514,11 @@ export default function GameView({ character }: GameViewProps) {
                   };
                   
                   // Add Act 5 entities
+                  gs.player.pos = { x: 400, y: 500 };
+                  gs.player.vel = { x: 0, y: 0 };
+                  gs.player.angle = -Math.PI/2;
+                  
                   gs.entities = [
-                    // Player starts at entrance
-                    { ...gs.player, pos: { x: 400, y: 500 }, vel: { x: 0, y: 0 }, angle: -Math.PI/2 },
                     // Promoter - giving presentation
                     { id: 'promoteur', type: 'npc' as const, pos: { x: 400, y: 200 }, vel: { x: 0, y: 0 }, angle: 0, size: 24, color: '#1e3a5f', health: 100, maxHealth: 100, meta: { name: 'M. Gros-Portefeuille', dialog: 'Mesdames et messieurs, cet eco-quartier est une revolution durable ! 600 logements, tram, panneaux solaires...', type: 'promoter' }},
                     // Engineers
@@ -780,6 +788,7 @@ export default function GameView({ character }: GameViewProps) {
           }
         }
       }
+    }
 
       // Render
       const ctx = canvasRef.current?.getContext('2d');
@@ -790,7 +799,12 @@ export default function GameView({ character }: GameViewProps) {
       if (hudTick % 6 === 0) {
         setHudState({
           ...gs,
-          player: { ...gs.player, pos: { ...gs.player.pos }, vel: { ...gs.player.vel } },
+          player: { 
+            ...gs.player, 
+            pos: { ...gs.player.pos }, 
+            vel: { ...gs.player.vel },
+            meta: gs.player.meta ? { ...gs.player.meta } : undefined
+          },
         });
       }
 
