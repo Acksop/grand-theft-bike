@@ -64,17 +64,17 @@ export default function App() {
             <p className="text-2xl font-bold text-foreground tracking-widest uppercase">Grand Theft Bike</p>
             <div className="flex justify-center gap-12 py-6">
                {CHARACTERS.map(char => (
-                 <div key={`title-${char.id}`} className="flex flex-col items-center gap-2 group/title">
+                 <div key={`title-${char.id}`} className="flex flex-col items-center gap-2 group/title pointer-events-none">
                    {char.imageUrl && (
                      <img 
                        src={char.imageUrl} 
                        alt={char.name} 
                        loading="eager"
-                       className="w-20 h-20 object-contain opacity-60 group-hover/title:opacity-100 transition-all animate-bounce-subtle filter drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] group-hover/title:scale-110"
+                       className="w-20 h-20 object-contain opacity-60 group-hover/title:opacity-100 transition-all animate-bounce-subtle filter drop-shadow-[0_0_15px_rgba(255,255,255,0.2)] group-hover/title:scale-110 pointer-events-none"
                        style={{ animationDelay: char.id === 'sarah' ? '0.5s' : char.id === 'marc' ? '1s' : '0s' }}
                      />
                    )}
-                   <span className="text-[8px] uppercase tracking-widest text-muted-foreground opacity-0 group-hover/title:opacity-100 transition-opacity">{char.name}</span>
+                   <span className="text-[8px] uppercase tracking-widest text-muted-foreground opacity-0 group-hover/title:opacity-100 transition-opacity pointer-events-none">{char.name}</span>
                  </div>
                ))}
             </div>
@@ -85,7 +85,11 @@ export default function App() {
             {CHARACTERS.map((char) => (
               <button 
                 key={char.id}
-                onClick={() => setSelectedCharacter(char)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setSelectedCharacter(char);
+                }}
                 className="group relative bg-slate-900/50 border-2 border-slate-800 p-6 pixel-corners cursor-pointer transition-all hover:scale-105 text-left w-full block"
                 style={{ '--hover-color': char.color } as any}
               >
@@ -174,7 +178,13 @@ export default function App() {
 
   if (showIntro) {
     return (
-      <button className="h-screen w-full bg-[#020617] flex items-center justify-center p-6 text-center cursor-pointer relative overflow-hidden block border-0 outline-none focus:outline-none" onClick={() => setShowIntro(false)}>
+      <button 
+        className="h-screen w-full bg-[#020617] flex items-center justify-center p-6 text-center cursor-pointer relative overflow-hidden block border-0 outline-none focus:outline-none" 
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowIntro(false);
+        }}
+      >
         {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
           <div className="absolute top-10 left-10 w-64 h-64 bg-primary rounded-full blur-[100px]" />
@@ -193,7 +203,7 @@ export default function App() {
                 <img 
                   src={selectedCharacter.imageUrl} 
                   alt={selectedCharacter.name} 
-                  className="w-32 h-32 object-contain filter drop-shadow-[0_0_20px_rgba(236,72,153,0.3)]"
+                  className="w-32 h-32 object-contain filter drop-shadow-[0_0_20px_rgba(236,72,153,0.3)] pointer-events-none"
                 />
               </div>
             </div>

@@ -48,26 +48,29 @@ export default function AudioController({ characterId }: AudioControllerProps) {
         audioRef.current.play()
           .then(() => {
             setIsPlaying(true);
-            window.removeEventListener('pointerdown', startAudio);
-            window.removeEventListener('keydown', startAudio);
+            document.removeEventListener('pointerdown', startAudio);
+            document.removeEventListener('keydown', startAudio);
           })
           .catch(err => console.log('Audio playback still blocked:', err));
       }
     };
 
-    window.addEventListener('pointerdown', startAudio);
-    window.addEventListener('keydown', startAudio);
+    document.addEventListener('pointerdown', startAudio);
+    document.addEventListener('keydown', startAudio);
 
     return () => {
-      window.removeEventListener('pointerdown', startAudio);
-      window.removeEventListener('keydown', startAudio);
+      document.removeEventListener('pointerdown', startAudio);
+      document.removeEventListener('keydown', startAudio);
     };
   }, [isPlaying, isMuted]);
 
   return (
     <div className="absolute bottom-4 right-4 z-[100] flex items-center gap-2 pointer-events-auto">
       <button
-        onClick={toggleMute}
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleMute();
+        }}
         className="p-3 bg-slate-900/80 border border-primary/30 rounded-full hover:bg-primary/20 transition-all text-primary shadow-lg backdrop-blur-sm"
         title={isMuted ? "Réactiver le son" : "Couper le son"}
       >

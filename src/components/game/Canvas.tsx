@@ -823,7 +823,10 @@ export default function GameView({ character }: GameViewProps) {
           style={{
             background: 'linear-gradient(180deg, #020617 0%, #0f172a 50%, #020617 100%)',
           }}
-          onClick={() => setShowAct2Intro(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAct2Intro(false);
+          }}
         >
           <div className="max-w-xl text-center p-12 relative overflow-hidden">
             {/* Animated background elements */}
@@ -890,7 +893,10 @@ export default function GameView({ character }: GameViewProps) {
           style={{
             background: 'radial-gradient(ellipse at center, #1e1b4b 0%, #020617 70%)',
           }}
-          onClick={() => setShowAct3Intro(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAct3Intro(false);
+          }}
         >
           <div className="max-w-xl text-center p-12">
             <div className="flex items-center justify-center gap-4 mb-8">
@@ -948,7 +954,10 @@ export default function GameView({ character }: GameViewProps) {
           style={{
             background: 'radial-gradient(ellipse at center, #1e1b4b 0%, #020617 70%)',
           }}
-          onClick={() => setShowAct4Intro(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAct4Intro(false);
+          }}
         >
           <div className="max-w-xl text-center p-12">
             <div className="flex items-center justify-center gap-4 mb-8">
@@ -1003,7 +1012,10 @@ export default function GameView({ character }: GameViewProps) {
           style={{
             background: 'radial-gradient(ellipse at center, #0f172a 0%, #020617 70%)',
           }}
-          onClick={() => setShowAct5Intro(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAct5Intro(false);
+          }}
         >
           <div className="max-w-xl text-center p-12">
             <div className="flex items-center justify-center gap-4 mb-8">
@@ -1062,7 +1074,10 @@ export default function GameView({ character }: GameViewProps) {
           style={{
             background: 'radial-gradient(ellipse at center, #172554 0%, #020617 70%)',
           }}
-          onClick={() => setShowAct6Intro(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowAct6Intro(false);
+          }}
         >
           <div className="max-w-xl text-center p-12">
             <div className="flex items-center justify-center gap-4 mb-8">
@@ -1197,7 +1212,10 @@ export default function GameView({ character }: GameViewProps) {
             
             <div className="space-y-3">
               <button 
-                onClick={() => window.location.reload()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.location.reload();
+                }}
                 className="w-full px-8 py-3 font-bold rounded transition-colors text-white"
                 style={{ background: showEnding.type === 'good' ? '#065f46' : showEnding.type === 'bad' ? '#7f1d1d' : '#3730a3' }}
               >
@@ -1205,7 +1223,10 @@ export default function GameView({ character }: GameViewProps) {
               </button>
               
               <button 
-                onClick={() => setShowCredits(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowCredits(true);
+                }}
                 className="w-full px-8 py-2 text-xs font-bold rounded border border-slate-700 hover:bg-slate-800 transition-colors text-slate-400"
               >
                 Afficher les crédits
@@ -1225,12 +1246,18 @@ export default function GameView({ character }: GameViewProps) {
         <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in p-6">
           <button 
             className="absolute inset-0 w-full h-full cursor-pointer bg-transparent border-0 outline-none"
-            onClick={() => setShowCredits(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowCredits(false);
+            }}
             aria-label="Fermer les crédits"
           />
           <div className="max-w-md w-full bg-slate-950 border-2 border-primary/30 p-8 pixel-corners relative shadow-[0_0_50px_rgba(16,185,129,0.2)] z-10">
             <button 
-              onClick={() => setShowCredits(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowCredits(false);
+              }}
               className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors"
             >
               ✕
@@ -1263,7 +1290,10 @@ export default function GameView({ character }: GameViewProps) {
               </div>
 
               <button 
-                onClick={() => setShowCredits(false)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowCredits(false);
+                }}
                 className="w-full mt-4 px-6 py-3 bg-primary/10 border border-primary/30 hover:bg-primary/20 text-primary font-bold uppercase tracking-widest text-xs transition-all"
               >
                 Fermer

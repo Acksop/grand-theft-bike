@@ -5,8 +5,8 @@
 @tailwind utilities;
 
 @layer base {
-  svg {
-    pointer-events: none;
+  svg, svg * {
+    pointer-events: none !important;
   }
   
   :root {
@@ -39,9 +39,10 @@
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased overflow-hidden;
+    @apply bg-background text-foreground font-sans antialiased overflow-hidden select-none;
   }
 }
 
