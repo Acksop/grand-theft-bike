@@ -211,11 +211,12 @@ function drawEntity(ctx: CanvasRenderingContext2D, entity: Entity, player: Entit
   ctx.save();
   ctx.translate(entity.pos.x, entity.pos.y);
 
+  const s = entity.size;
   const spriteUrl = entity.meta?.spriteUrl;
   const sprite = getSprite(spriteUrl);
 
   if (sprite && sprite.complete) {
-    const drawSize = entity.size * 5; // Visual size adjustment
+    const drawSize = s * 5; // Visual size adjustment
     ctx.drawImage(
       sprite,
       -drawSize / 2,
@@ -226,7 +227,6 @@ function drawEntity(ctx: CanvasRenderingContext2D, entity: Entity, player: Entit
   } else {
     // Body
     ctx.fillStyle = entity.color;
-    const s = entity.size;
     ctx.fillRect(-s / 2, -s / 2, s, s);
 
     // Eyes
