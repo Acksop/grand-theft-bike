@@ -83,10 +83,10 @@ export default function App() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {CHARACTERS.map((char) => (
-              <div 
+              <button 
                 key={char.id}
                 onClick={() => setSelectedCharacter(char)}
-                className="group relative bg-slate-900/50 border-2 border-slate-800 p-6 pixel-corners cursor-pointer transition-all hover:scale-105"
+                className="group relative bg-slate-900/50 border-2 border-slate-800 p-6 pixel-corners cursor-pointer transition-all hover:scale-105 text-left w-full block"
                 style={{ '--hover-color': char.color } as any}
               >
                 {/* Custom Hover Border logic via style or classes */}
@@ -127,7 +127,7 @@ export default function App() {
                     <div className="h-full opacity-80" style={{ width: `${(char.stats.health / 150) * 100}%`, backgroundColor: char.color }} />
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
 
@@ -174,7 +174,7 @@ export default function App() {
 
   if (showIntro) {
     return (
-      <div className="h-screen w-full bg-[#020617] flex items-center justify-center p-6 text-center cursor-pointer relative overflow-hidden" onClick={() => setShowIntro(false)}>
+      <button className="h-screen w-full bg-[#020617] flex items-center justify-center p-6 text-center cursor-pointer relative overflow-hidden block border-0 outline-none focus:outline-none" onClick={() => setShowIntro(false)}>
         {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
           <div className="absolute top-10 left-10 w-64 h-64 bg-primary rounded-full blur-[100px]" />
@@ -212,7 +212,7 @@ export default function App() {
             Votre mission commence maintenant
           </p>
         </div>
-      </div>
+      </button>
     );
   }
 

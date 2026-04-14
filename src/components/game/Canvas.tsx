@@ -300,11 +300,8 @@ export default function GameView({ character }: GameViewProps) {
                       gs.missionStatus = 'completed';
                       setDialog({ name: "Mission accomplie", text: "Tu as sensibilisé assez de gens ! Retourne voir Camille." });
                     }
-                  } else if (ent.id === 'camille' && gs.missionStatus === 'completed') {
-                     setDialog({ name: 'Camille', text: `Super boulot ${character.name} ! On commence à se faire entendre. Prépare-toi pour la Suite...` });
-                     gs.karma += 10;
                   } else {
-                     setDialog({ name: ent.meta.name, text: ent.meta.dialog });
+                    setDialog({ name: ent.meta.name, text: ent.meta.dialog });
                   }
                 } else if (ent.id === 'camille' && gs.missionStatus === 'completed') {
                    setDialog({ name: 'Camille', text: `Super boulot ${character.name} ! On commence à se faire entendre. Prépare-toi pour la Suite...` });
@@ -821,8 +818,8 @@ export default function GameView({ character }: GameViewProps) {
   return (
     <div className="relative w-full h-screen overflow-hidden" style={{ background: '#020617' }}>
       {showAct2Intro && (
-        <div 
-          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer"
+        <button 
+          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer block w-full h-full border-0 outline-none p-0 text-foreground"
           style={{
             background: 'linear-gradient(180deg, #020617 0%, #0f172a 50%, #020617 100%)',
           }}
@@ -884,12 +881,12 @@ export default function GameView({ character }: GameViewProps) {
               </div>
             </div>
           </div>
-        </div>
+        </button>
       )}
       
       {showAct3Intro && (
-        <div 
-          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer"
+        <button 
+          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer block w-full h-full border-0 outline-none p-0"
           style={{
             background: 'radial-gradient(ellipse at center, #1e1b4b 0%, #020617 70%)',
           }}
@@ -942,12 +939,12 @@ export default function GameView({ character }: GameViewProps) {
               </p>
             </div>
           </div>
-        </div>
+        </button>
       )}
       
       {showAct4Intro && (
-        <div 
-          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer"
+        <button 
+          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer block w-full h-full border-0 outline-none p-0"
           style={{
             background: 'radial-gradient(ellipse at center, #1e1b4b 0%, #020617 70%)',
           }}
@@ -997,12 +994,12 @@ export default function GameView({ character }: GameViewProps) {
               </p>
             </div>
           </div>
-        </div>
+        </button>
       )}
       
       {showAct5Intro && (
-        <div 
-          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer"
+        <button 
+          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer block w-full h-full border-0 outline-none p-0"
           style={{
             background: 'radial-gradient(ellipse at center, #0f172a 0%, #020617 70%)',
           }}
@@ -1054,14 +1051,14 @@ export default function GameView({ character }: GameViewProps) {
               </p>
             </div>
           </div>
-        </div>
+        </button>
       )}
       
       <canvas ref={canvasRef} className="pixel-art block" />
       <AudioController characterId={character.id} />
       {showAct6Intro && (
-        <div 
-          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer"
+        <button 
+          className="absolute inset-0 z-50 flex items-center justify-center cursor-pointer block w-full h-full border-0 outline-none p-0"
           style={{
             background: 'radial-gradient(ellipse at center, #172554 0%, #020617 70%)',
           }}
@@ -1110,7 +1107,7 @@ export default function GameView({ character }: GameViewProps) {
               </p>
             </div>
           </div>
-        </div>
+        </button>
       )}
       <Hud state={hudState} />
       {/* Character badge */}
