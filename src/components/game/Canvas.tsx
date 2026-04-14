@@ -1223,7 +1223,12 @@ export default function GameView({ character }: GameViewProps) {
       {/* Credits Popup */}
       {showCredits && (
         <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md animate-fade-in p-6">
-          <div className="max-w-md w-full bg-slate-950 border-2 border-primary/30 p-8 pixel-corners relative shadow-[0_0_50px_rgba(16,185,129,0.2)]">
+          <button 
+            className="absolute inset-0 w-full h-full cursor-pointer bg-transparent border-0 outline-none"
+            onClick={() => setShowCredits(false)}
+            aria-label="Fermer les crédits"
+          />
+          <div className="max-w-md w-full bg-slate-950 border-2 border-primary/30 p-8 pixel-corners relative shadow-[0_0_50px_rgba(16,185,129,0.2)] z-10">
             <button 
               onClick={() => setShowCredits(false)}
               className="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors"

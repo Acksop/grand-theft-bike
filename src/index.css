@@ -5,6 +5,10 @@
 @tailwind utilities;
 
 @layer base {
+  svg {
+    pointer-events: none;
+  }
+  
   :root {
     --background: 228 84% 5%;
     --foreground: 210 40% 98%;

@@ -48,18 +48,18 @@ export default function AudioController({ characterId }: AudioControllerProps) {
         audioRef.current.play()
           .then(() => {
             setIsPlaying(true);
-            window.removeEventListener('click', startAudio);
+            window.removeEventListener('pointerdown', startAudio);
             window.removeEventListener('keydown', startAudio);
           })
           .catch(err => console.log('Audio playback still blocked:', err));
       }
     };
 
-    window.addEventListener('click', startAudio);
+    window.addEventListener('pointerdown', startAudio);
     window.addEventListener('keydown', startAudio);
 
     return () => {
-      window.removeEventListener('click', startAudio);
+      window.removeEventListener('pointerdown', startAudio);
       window.removeEventListener('keydown', startAudio);
     };
   }, [isPlaying, isMuted]);
