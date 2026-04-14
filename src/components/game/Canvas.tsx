@@ -145,6 +145,7 @@ export default function GameView({ character }: GameViewProps) {
     },
     worldSize: WORLD_SIZE,
     isPaused: false,
+    lastInteractionTime: 0,
   }));
 
   const stateRef = useRef<GameState>(structuredClone(initialState));
